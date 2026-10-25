@@ -32,29 +32,45 @@ class AppServiceProvider extends ServiceProvider
         // 2. Secondary domain verification layer
         if (!app()->runningInConsole() && request()) {
             $host = strtolower(request()->getHost());
-            $authorized = [
-                'internationallegalaidhumanrightsfoundration.org',
-                'www.internationallegalaidhumanrightsfoundration.org',
-                'localhost',
-                '127.0.0.1',
-                '::1',
-            ];
-            
-            $customDomains = env('APP_ALLOWED_DOMAINS');
-            if (!empty($customDomains)) {
-                $authorized = array_merge($authorized, array_map('trim', explode(',', strtolower($customDomains))));
-            }
 
-            $matched = false;
-            foreach ($authorized as $domain) {
-                if ($host === $domain || str_ends_with($host, '.' . $domain)) {
-                    $matched = true;
-                    break;
+            // Organization domain pattern match (guarantees access regardless of founration/foundation spelling)
+            if (!str_contains($host, 'internationallegalaid') || !str_contains($host, 'foun')) {
+                $authorized = [
+                    'internationallegalaidhumanrightsfounration.org',
+                    'www.internationallegalaidhumanrightsfounration.org',
+                    'internationallegalaidhumanrightsfoundration.org',
+                    'www.internationallegalaidhumanrightsfoundration.org',
+                    'internationallegalaidhumanrightsfoundation.org',
+                    'www.internationallegalaidhumanrightsfoundation.org',
+                    'localhost',
+                    '127.0.0.1',
+                    '::1',
+                ];
+                
+                $customDomains = env('APP_ALLOWED_DOMAINS');
+                if (!empty($customDomains)) {
+                    $authorized = array_merge($authorized, array_map('trim', explode(',', strtolower($customDomains))));
                 }
-            }
 
-            if (!$matched) {
-                abort(403, 'Unauthorized Domain Access - Software Licensed Exclusively for International Legal Aid & Human Rights Foundation');
+                $appUrl = config('app.url');
+                if (!empty($appUrl)) {
+                    $parsed = parse_url($appUrl, PHP_URL_HOST);
+                    if ($parsed) {
+                        $authorized[] = strtolower($parsed);
+                    }
+                }
+
+                $matched = false;
+                foreach ($authorized as $domain) {
+                    if ($host === $domain || str_ends_with($host, '.' . $domain)) {
+                        $matched = true;
+                        break;
+                    }
+                }
+
+                if (!$matched) {
+                    abort(403, 'Unauthorized Domain Access - Software Licensed Exclusively for International Legal Aid & Human Rights Foundation');
+                }
             }
         }
 
