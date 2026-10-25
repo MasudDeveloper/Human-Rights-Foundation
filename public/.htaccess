@@ -35,6 +35,7 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
+
 # Block access to hidden files (.env, .git, etc.) (Compatible with Apache 2.4 and 2.2)
 <FilesMatch "^\.">
     <IfModule mod_authz_core.c>
