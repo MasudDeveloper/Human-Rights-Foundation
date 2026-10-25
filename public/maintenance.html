@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ওয়েবসাইট উন্নয়ন ও সংস্কার কাজ চলছে - আন্তর্জাতিক মানবাধিকার আইন সহায়তাকারী ফাউন্ডেশন</title>
+
+    <!-- Meta Information -->
+    <meta name="description"
+        content="আন্তর্জাতিক মানবাধিকার আইন সহায়তাকারী ফাউন্ডেশন (International Legal Aid & Human Rights Foundation) - এর ওয়েবসাইট উন্নয়ন ও সংস্কার কাজ চলছে। জরুরি আইনি সহায়তা বা যোগাযোগের জন্য কল করুন: 01758343597।">
+    <link rel="icon" type="image/png" href="images/org_logo_new.png">
+
+    <!-- Google Fonts: Hind Siliguri for Bengali & Outfit for Numbers/English -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-deep: #051326;
+            --bg-card: rgba(10, 28, 54, 0.82);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --border-glow: rgba(245, 158, 11, 0.4);
+            --amber-primary: #f59e0b;
+            --amber-light: #fbbf24;
+            --emerald-accent: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.35);
+            --cyan-accent: #38bdf8;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-bn: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-en: 'Outfit', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-bn);
+            background-color: var(--bg-deep);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 24px 16px;
+            background-image:
+                radial-gradient(circle at 15% 20%, rgba(14, 165, 233, 0.16) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(245, 158, 11, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.65) 0%, var(--bg-deep) 100%);
+        }
+
+        /* Animated Grid Overlay */
+        .grid-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: 40px 40px;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Ambient Glow Spheres */
+        .glow-sphere {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.45;
+            z-index: 1;
+            pointer-events: none;
+            animation: floatSlow 12s ease-in-out infinite alternate;
+        }
+
+        .glow-1 {
+            width: 360px;
+            height: 360px;
+            background: #0284c7;
+            top: -100px;
+            left: -100px;
+        }
+
+        .glow-2 {
+            width: 400px;
+            height: 400px;
+            background: #d97706;
+            bottom: -100px;
+            right: -100px;
+            animation-duration: 15s;
+        }
+
+        @keyframes floatSlow {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                transform: translateY(30px) scale(1.1);
+            }
+        }
+
+        /* Main Container */
+        .maintenance-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 860px;
+            margin: auto;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 28px;
+            padding: 44px 36px;
+            box-shadow:
+                0 25px 60px -15px rgba(0, 0, 0, 0.75),
+                0 0 45px -10px rgba(245, 158, 11, 0.2),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0284c7, #f59e0b, #10b981, #0284c7);
+            background-size: 300% 100%;
+            animation: gradientBorder 6s linear infinite;
+        }
+
+        @keyframes gradientBorder {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 300% 50%;
+            }
+        }
+
+        /* Brand Section */
+        .brand-header {
+            margin-bottom: 24px;
+        }
+
+        .logo-wrap {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 18px;
+            padding: 8px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, rgba(255, 255, 255, 0.04) 70%);
+            border: 1.5px solid rgba(245, 158, 11, 0.45);
+            border-radius: 50%;
+            box-shadow:
+                0 14px 35px -5px rgba(0, 0, 0, 0.65),
+                0 0 35px rgba(245, 158, 11, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: floatLogo 4s ease-in-out infinite alternate;
+        }
+
+        .logo-wrap:hover {
+            transform: scale(1.06) rotate(1deg);
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+            filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5));
+        }
+
+        @keyframes floatLogo {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .org-title {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.35;
+            letter-spacing: -0.01em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 6px;
+        }
+
+        .org-title-en {
+            font-family: var(--font-en);
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--amber-light);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 16px;
+        }
+
+        .badges-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+        }
+
+        .pill-badge.active {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.35);
+            color: #6ee7b7;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--emerald-accent);
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulseEffect 1.8s infinite;
+        }
+
+        @keyframes pulseEffect {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            margin: 20px auto 26px;
+            width: 80%;
+        }
+
+        /* Notice Headline & Description */
+        .notice-headline {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, #fde68a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 14px;
+            line-height: 1.3;
+        }
+
+        .notice-desc {
+            font-size: 1.05rem;
+            color: #cbd5e1;
+            line-height: 1.7;
+            max-width: 660px;
+            margin: 0 auto 28px;
+        }
+
+        .notice-desc strong {
+            color: var(--amber-light);
+            font-weight: 700;
+        }
+
+        /* Progress Card */
+        .progress-box {
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 18px 24px;
+            max-width: 580px;
+            margin: 0 auto 30px;
+        }
+
+        .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        .progress-percent {
+            font-family: var(--font-en);
+            font-weight: 700;
+            color: var(--amber-light);
+            font-size: 1rem;
+        }
+
+        .progress-bar-track {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 85%;
+            background: linear-gradient(90deg, #0284c7, #f59e0b, #10b981);
+            border-radius: 10px;
+            position: relative;
+            background-size: 30px 30px;
+            background-image: linear-gradient(45deg,
+                    rgba(255, 255, 255, 0.2) 25%,
+                    transparent 25%,
+                    transparent 50%,
+                    rgba(255, 255, 255, 0.2) 50%,
+                    rgba(255, 255, 255, 0.2) 75%,
+                    transparent 75%,
+                    transparent);
+            animation: moveStripes 2s linear infinite;
+        }
+
+        @keyframes moveStripes {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 30px 0;
+            }
+        }
+
+        /* Features List */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(245, 158, 11, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .feature-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .feature-icon.icon-blue {
+            background: rgba(2, 132, 199, 0.2);
+            color: #38bdf8;
+        }
+
+        .feature-icon.icon-amber {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .feature-icon.icon-green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .feature-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+
+        .feature-sub {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        /* Emergency Contact Bar */
+        .contact-box {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.65));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 22px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            text-align: left;
+        }
+
+        .contact-text h4 {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .contact-text p {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+
+        .contact-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-call {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+        }
+
+        .btn-call:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Footer Details */
+        .office-details {
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .office-details i {
+            color: var(--amber-light);
+        }
+
+        .copyright-text {
+            margin-top: 20px;
+            font-size: 0.78rem;
+            color: #64748b;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .glass-card {
+                padding: 32px 20px;
+                border-radius: 22px;
+            }
+
+            .logo-wrap {
+                width: 120px;
+                height: 120px;
+            }
+
+            .org-title {
+                font-size: 1.35rem;
+            }
+
+            .notice-headline {
+                font-size: 1.5rem;
+            }
+
+            .notice-desc {
+                font-size: 0.95rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .contact-box {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .contact-actions {
+                justify-content: center;
+            }
+
+            .btn {
+                justify-content: center;
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Subtle Background Elements -->
+    <div class="grid-pattern"></div>
+    <div class="glow-sphere glow-1"></div>
+    <div class="glow-sphere glow-2"></div>
+
+    <div class="maintenance-container">
+
+        <main class="glass-card">
+
+            <!-- Brand Section -->
+            <header class="brand-header">
+                <div class="logo-wrap">
+                    <img src="images/org_logo_new.png" alt="আন্তর্জাতিক মানবাধিকার আইন সহায়তাকারী ফাউন্ডেশন"
+                        class="logo-img"
+                        onerror="this.onerror=null; this.src='cit_web/public/images/org_logo_new.png';">
+                </div>
+
+                <h1 class="org-title-en"
+                    style="font-size: 1.5rem; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">
+                    International Legal Aid & Human Rights Foundation</h1>
+                <p class="org-title"
+                    style="font-size: 1.25rem; font-weight: 700; color: var(--amber-light); margin-bottom: 16px;">
+                    আন্তর্জাতিক মানবাধিকার আইন সহায়তাকারী ফাউন্ডেশন</p>
+
+                <div class="badges-row">
+                    <span class="pill-badge">
+                        <i class="fa-solid fa-scale-balanced" style="color: #fbbf24;"></i>
+                        ন্যায় বিচার প্রতিষ্ঠায় আপোষহীন
+                    </span>
+                    <span class="pill-badge">
+                        <i class="fa-solid fa-award" style="color: #38bdf8;"></i>
+                        স্থাপিত ২০২৬
+                    </span>
+                    <span class="pill-badge active">
+                        <span class="pulse-dot"></span>
+                        সংস্কার কাজ চলছে
+                    </span>
+                </div>
+            </header>
+
+            <div class="divider"></div>
+
+            <!-- Central Notice Message -->
+            <section class="notice-section">
+                <h2 class="notice-headline">ওয়েবসাইট উন্নয়ন ও সংস্কার কাজ চলমান রয়েছে</h2>
+                <p class="notice-desc">
+                    সম্মানিত নাগরিক ও ফাউন্ডেশনের সদস্যবৃন্দের অবগতির জন্য জানানো যাচ্ছে যে, মানবাধিকার ও আইনি সহায়তা
+                    সেবাসমূহ আরও আধুনিক ও সহজলভ্য করতে আমাদের ওয়েবসাইটের সার্ভার আপগ্রেডেশন এবং প্রযুক্তিগত সংস্কার কাজ
+                    চলছে।
+                    <strong>খুব শীঘ্রই আমরা সম্পূর্ণ নতুন আঙ্গিকে ফিরে আসছি ইনশাআল্লাহ।</strong> সাময়িক এই অসুবিধার জন্য
+                    আমরা আন্তরিকভাবে দুঃখ প্রকাশ করছি।
+                </p>
+
+                <!-- Dynamic Progress Indicator -->
+                <div class="progress-box">
+                    <div class="progress-meta">
+                        <span><i class="fa-solid fa-code-merge" style="margin-right: 6px; color: #38bdf8;"></i>সিস্টেম
+                            হালনাগাদ অগ্রগতি</span>
+                        <span class="progress-percent" id="progressText">৮৫% সম্পন্ন</span>
+                    </div>
+                    <div class="progress-bar-track">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Capabilities Grid -->
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-blue">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <h3 class="feature-title">অনলাইন আইনি সহায়তা ও অভিযোগ</h3>
+                        <p class="feature-sub">নির্যাতন ও মানবাধিকার লঙ্ঘনে সরাসরি অনলাইনে অভিযোগ দাখিল ও অনুসন্ধান।</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon icon-amber">
+                            <i class="fa-solid fa-id-card-clip"></i>
+                        </div>
+                        <h3 class="feature-title">ডিজিটাল সদস্য পরিচিতি</h3>
+                        <p class="feature-sub">সারাদেশের জেলা ও উপজেলা কমিটির সদস্য পরিচিতি ও স্মার্ট কার্ড অনলাইন
+                            ভেরিফিকেশন।</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon icon-green">
+                            <i class="fa-solid fa-handshake-angle"></i>
+                        </div>
+                        <h3 class="feature-title">আইনি পরামর্শ ও হেল্পডেস্ক</h3>
+                        <p class="feature-sub">আইনজীবী ও আইনি পরামর্শকদের সাথে সরাসরি যোগাযোগ ও সার্বক্ষণিক সহায়তা।</p>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact Bar -->
+                <div class="contact-box">
+                    <div class="contact-text">
+                        <h4><i class="fa-solid fa-phone-volume" style="color: #10b981;"></i> জরুরি আইনি সহায়তা প্রয়োজন?
+                        </h4>
+                        <p>যেকোনো জরুরি প্রয়োজনে আমাদের হটলাইন নম্বরে সরাসরি যোগাযোগ করতে পারেন</p>
+                    </div>
+                    <div class="contact-actions">
+                        <a href="tel:01644416378" class="btn btn-call">
+                            <i class="fa-solid fa-phone"></i> 01758343597
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Head Office Location -->
+                <div class="office-details">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>কেন্দ্রীয় কার্যালয়: ৫৫ ডিআইটি এক্সটেনশন রোড, নয়াপল্টন, ঢাকা-১০০০, বাংলাদেশ।</span>
+                </div>
+
+            </section>
+
+        </main>
+
+        <footer class="copyright-text">
+            <p>© ২০২৬ International Legal Aid & Human Rights Foundation • আন্তর্জাতিক মানবাধিকার আইন সহায়তাকারী
+                ফাউন্ডেশন। সর্বস্বত্ব সংরক্ষিত।</p>
+            <p style="margin-top: 6px; font-size: 0.76rem; color: #94a3b8;">
+                Developed by <strong style="color: #fbbf24;">Ln Md Saiful Chowdhury</strong> (<a
+                    href="tel:+8801852186180" style="color: #cbd5e1; text-decoration: none;">+880 1852-186180</a>)
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- Small script for interactive feeling -->
+    <script>
+        const progressValues = ['৮২% সম্পন্ন', '৮৫% সম্পন্ন', '৮৮% সম্পন্ন'];
+        let idx = 1;
+        setInterval(() => {
+            idx = (idx + 1) % progressValues.length;
+            const el = document.getElementById('progressText');
+            if (el) el.innerText = progressValues[idx];
+        }, 5000);
+    </script>
+</body>
+
+</html>

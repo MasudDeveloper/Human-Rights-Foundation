@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Providers;
+
+use App\Models\Setting;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        // 1. Check License & Kill-Switch
+        if (!app()->runningInConsole() && request()) {
+            $license = \App\Services\LicenseService::isLicenseActive();
+            if (!$license['active']) {
+                abort(403, $license['reason'] ?? 'License Suspended by MR Developer');
+            }
+        }
+
+        // 2. Secondary domain verification layer
+        if (!app()->runningInConsole() && request()) {
+            $host = strtolower(request()->getHost());
+            $authorized = [
+                'internationallegalaidhumanrightsfoundration.org',
+                'www.internationallegalaidhumanrightsfoundration.org',
+                'localhost',
+                '127.0.0.1',
+                '::1',
+            ];
+            
+            $customDomains = env('APP_ALLOWED_DOMAINS');
+            if (!empty($customDomains)) {
+                $authorized = array_merge($authorized, array_map('trim', explode(',', strtolower($customDomains))));
+            }
+
+            $matched = false;
+            foreach ($authorized as $domain) {
+                if ($host === $domain || str_ends_with($host, '.' . $domain)) {
+                    $matched = true;
+                    break;
+                }
+            }
+
+            if (!$matched) {
+                abort(403, 'Unauthorized Domain Access - Software Licensed Exclusively for International Legal Aid & Human Rights Foundation');
+            }
+        }
+
+        View::composer('*', function ($view) {
+            $settings = Setting::allKeyed();
+            
+            try {
+                $tickerNotices = \App\Models\Notice::ticker()->orderBy('published_date', 'desc')->take(6)->get();
+            } catch (\Throwable $e) {
+                $tickerNotices = collect();
+            }
+
+            $view->with([
+                'siteSettings' => $settings,
+                'siteLogo' => Setting::getLogoUrl(),
+                'siteFavicon' => Setting::getFaviconUrl(),
+                'authorizedSignatureUrl' => Setting::getSignatureUrl(),
+                'authorizedSealUrl' => Setting::getSealUrl(),
+                'tickerNotices' => $tickerNotices,
+            ]);
+        });
+    }
+}
+

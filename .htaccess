@@ -1,0 +1,30 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Prevent direct access to hidden files and dotfiles (.env, .git, etc.)
+    RewriteRule ^(\.env|\.git|composer\.(json|lock)|package\.(json|lock)|artisan|phpunit\.xml) - [F,L,NC]
+
+    # Prevent direct access to sensitive directories
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage\/logs|tests)(\/.*)?$ - [F,L,NC]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect directly to public directory
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Block access to sensitive file extensions
+<FilesMatch "(^\..*|\.(env|sql|log|sh|bak|config|json|lock))$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Disable Directory Browsing
+Options -Indexes
