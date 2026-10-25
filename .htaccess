@@ -15,16 +15,20 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Redirect directly to public directory
+    # Send Requests To Public Directory
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
 
-# Block access to sensitive file extensions
+# Block access to sensitive file extensions (Compatible with Apache 2.4 and 2.2)
 <FilesMatch "(^\..*|\.(env|sql|log|sh|bak|config|json|lock))$">
-    Order allow,deny
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
-# Disable Directory Browsing
 Options -Indexes
