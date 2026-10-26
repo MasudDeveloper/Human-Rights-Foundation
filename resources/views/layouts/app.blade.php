@@ -621,6 +621,82 @@
         @endauth
     </div>
 
+    <!-- Floating PWA Install Widget (Mobile & Desktop) -->
+    <div id="pwaFloatingWidget" class="fixed bottom-20 right-3.5 sm:bottom-6 sm:right-6 z-40 select-none transition-all duration-300">
+        <!-- Close / Dismiss Badge -->
+        <button type="button" id="pwaDismissBtn" class="absolute -top-2 -right-1 w-5 h-5 bg-slate-900/90 text-slate-300 hover:text-white rounded-full flex items-center justify-center text-[10px] shadow-md border border-slate-600 z-10 transition hover:scale-110" title="বন্ধ করুন">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Floating Button Trigger -->
+        <button type="button" id="floatingPwaBtn" class="group flex flex-col items-center bg-gradient-to-b from-[#082038] via-[#051525] to-[#020b14] border-2 border-amber-400/90 shadow-[0_8px_25px_rgba(0,0,0,0.45)] hover:shadow-[0_12px_30px_rgba(245,158,11,0.35)] rounded-2xl p-2 sm:p-2.5 hover:scale-105 active:scale-95 transition-all duration-200">
+            <!-- App Icon with Download Badge -->
+            <div class="relative w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-white/10 flex items-center justify-center p-1 border border-white/15 overflow-hidden">
+                <img src="{{ $siteLogo }}" alt="App Icon" class="w-full h-full object-contain filter drop-shadow">
+                <span class="absolute bottom-0 right-0 bg-emerald-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] shadow animate-pulse">
+                    <i class="fa-solid fa-download"></i>
+                </span>
+            </div>
+
+            <!-- Text Label -->
+            <div class="mt-1 text-center">
+                <span class="block text-[11px] sm:text-xs font-black text-amber-300 tracking-tight leading-tight group-hover:text-amber-200">
+                    ইনস্টল নাও
+                </span>
+                <span class="block text-[8px] sm:text-[9px] text-slate-300 font-semibold leading-tight">
+                    মোবাইল অ্যাপ
+                </span>
+            </div>
+        </button>
+    </div>
+
+    <!-- PWA Install Guide Modal (Shown when deferred prompt is not directly available e.g. iOS Safari) -->
+    <div id="pwaGuideModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-slate-200 text-slate-800 relative animate-in fade-in zoom-in-95 duration-200">
+            <button type="button" id="pwaCloseModalBtn" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 rounded-xl bg-slate-100 p-1 border border-slate-200 shadow-sm flex items-center justify-center flex-shrink-0">
+                    <img src="{{ $siteLogo }}" alt="App Icon" class="max-h-full max-w-full object-contain">
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-900 text-sm">অ্যাপ ইনস্টল নির্দেশিকা</h3>
+                    <p class="text-xs text-slate-500">ডিভাইসে সরাসরি ইনস্টল করুন</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-600 bg-slate-50 p-3.5 rounded-xl border border-slate-200 leading-relaxed">
+                <div class="flex items-start space-x-2.5">
+                    <i class="fa-brands fa-android text-emerald-600 text-base mt-0.5 flex-shrink-0"></i>
+                    <div>
+                        <strong class="text-slate-900 block font-semibold">অ্যান্ড্রয়েড (Google Chrome)</strong>
+                        <span>ব্রাউজারের উপরে ডানদিকের <strong>(⋮) থ্রি-ডট</strong> মেনু চাপুন এবং <strong>'Install app'</strong> বা <strong>'Add to Home screen'</strong> এ ট্যাপ করুন।</span>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-2.5 pt-2.5 border-t border-slate-200">
+                    <i class="fa-brands fa-apple text-slate-900 text-base mt-0.5 flex-shrink-0"></i>
+                    <div>
+                        <strong class="text-slate-900 block font-semibold">আইফোন / আইপ্যাড (Safari)</strong>
+                        <span>নিচের <strong>Share (শেয়ার [⎋])</strong> বাটনে চাপুন এবং স্ক্রোল করে <strong>'Add to Home Screen'</strong> বেছে নিন।</span>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-2.5 pt-2.5 border-t border-slate-200">
+                    <i class="fa-solid fa-desktop text-blue-600 text-base mt-0.5 flex-shrink-0"></i>
+                    <div>
+                        <strong class="text-slate-900 block font-semibold">কম্পিউটার (Chrome / Edge)</strong>
+                        <span>ব্রাউজারের অ্যাড্রেস বারের ডানপাশে থাকা <strong>Install</strong> আইকনে ক্লিক করুন।</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" id="pwaModalOkBtn" class="mt-4 w-full py-2.5 bg-gradient-to-r from-brand-900 to-brand-800 hover:from-brand-800 hover:to-brand-700 text-amber-300 font-bold text-xs rounded-xl shadow transition">
+                বুঝেছি / ঠিক আছে
+            </button>
+        </div>
+    </div>
+
     <!-- PWA Install Prompt Logic & Service Worker Registration -->
     <script>
         // Register Service Worker
@@ -632,46 +708,97 @@
             });
         }
 
-        let deferredPrompt;
-        const installBtn = document.getElementById('pwaInstallBtn');
+        let deferredPrompt = null;
+        const headerInstallBtn = document.getElementById('pwaInstallBtn');
+        const floatingWidget = document.getElementById('pwaFloatingWidget');
+        const floatingPwaBtn = document.getElementById('floatingPwaBtn');
+        const pwaDismissBtn = document.getElementById('pwaDismissBtn');
+        const pwaGuideModal = document.getElementById('pwaGuideModal');
+        const pwaCloseModalBtn = document.getElementById('pwaCloseModalBtn');
+        const pwaModalOkBtn = document.getElementById('pwaModalOkBtn');
 
-        // Check if already installed
+        // Check if already running in standalone mode (installed app)
         const isAppInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-        if (isAppInstalled && installBtn) {
-            installBtn.classList.add('hidden');
-            installBtn.classList.remove('inline-flex');
+
+        if (isAppInstalled) {
+            if (headerInstallBtn) headerInstallBtn.remove();
+            if (floatingWidget) floatingWidget.remove();
+        } else {
+            // Check if dismissed in this session
+            if (sessionStorage.getItem('pwa_widget_dismissed') === '1') {
+                if (floatingWidget) floatingWidget.classList.add('hidden');
+            }
         }
 
+        // Capture PWA beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if (installBtn && !isAppInstalled) {
-                installBtn.classList.remove('hidden');
-                installBtn.classList.add('inline-flex');
+            if (headerInstallBtn && !isAppInstalled) {
+                headerInstallBtn.classList.remove('hidden');
+                headerInstallBtn.classList.add('inline-flex');
+            }
+            if (floatingWidget && !isAppInstalled && sessionStorage.getItem('pwa_widget_dismissed') !== '1') {
+                floatingWidget.classList.remove('hidden');
             }
         });
 
-        if (installBtn) {
-            installBtn.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        installBtn.classList.remove('inline-flex');
-                        installBtn.classList.add('hidden');
-                    }
-                    deferredPrompt = null;
-                } else {
-                    alert("অ্যাপটি সরাসরি আপনার ডিভাইসে ইনস্টল করতে:\n১. ব্রাউজারের থ্রি-ডট (⋮) মেনু বা শেয়ার বাটনে চাপুন।\n২. 'Install App' বা 'Add to Home Screen' এ ট্যাপ করুন।");
+        // Trigger Install Handler
+        async function handlePwaInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    if (headerInstallBtn) headerInstallBtn.remove();
+                    if (floatingWidget) floatingWidget.remove();
                 }
+                deferredPrompt = null;
+            } else {
+                // Open guide modal for browsers without direct programmatic prompt
+                if (pwaGuideModal) {
+                    pwaGuideModal.classList.remove('hidden');
+                    pwaGuideModal.classList.add('flex');
+                }
+            }
+        }
+
+        if (headerInstallBtn) {
+            headerInstallBtn.addEventListener('click', handlePwaInstall);
+        }
+
+        if (floatingPwaBtn) {
+            floatingPwaBtn.addEventListener('click', handlePwaInstall);
+        }
+
+        // Modal close helpers
+        function closeGuideModal() {
+            if (pwaGuideModal) {
+                pwaGuideModal.classList.add('hidden');
+                pwaGuideModal.classList.remove('flex');
+            }
+        }
+        if (pwaCloseModalBtn) pwaCloseModalBtn.addEventListener('click', closeGuideModal);
+        if (pwaModalOkBtn) pwaModalOkBtn.addEventListener('click', closeGuideModal);
+        if (pwaGuideModal) {
+            pwaGuideModal.addEventListener('click', (e) => {
+                if (e.target === pwaGuideModal) closeGuideModal();
             });
         }
 
+        // Dismiss floating widget
+        if (pwaDismissBtn && floatingWidget) {
+            pwaDismissBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                floatingWidget.classList.add('hidden');
+                sessionStorage.setItem('pwa_widget_dismissed', '1');
+            });
+        }
+
+        // Detect successful install
         window.addEventListener('appinstalled', () => {
-            if (installBtn) {
-                installBtn.classList.remove('inline-flex');
-                installBtn.classList.add('hidden');
-            }
+            if (headerInstallBtn) headerInstallBtn.remove();
+            if (floatingWidget) floatingWidget.remove();
+            closeGuideModal();
         });
     </script>
 
