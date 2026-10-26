@@ -9,7 +9,7 @@
         <!-- Header Section -->
         <div class="text-center max-w-2xl mx-auto mb-10">
             <span class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-extrabold bg-amber-500/10 text-amber-700 border border-amber-300 mb-2">
-                <i class="fa-solid fa-users mr-1.5 text-amber-600"></i>সারাদেশের অনুমোদিত প্রতিনিধিগণ
+                <i class="fa-solid fa-users mr-1.5 text-amber-600"></i>সারাবিশ্বের অনুমোদিত প্রতিনিধিগণ
             </span>
             <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">অনুমোদিত সদস্য ও দায়িত্বশীলবৃন্দ</h1>
             <p class="text-xs sm:text-sm text-slate-600 mt-2">সংস্থার কেন্দ্রীয় কমিটি, জেলা ও উপজেলা পর্যায়ের অনুমোদিত সদস্য ও কর্মকর্তাদের তালিকা</p>

@@ -14,7 +14,7 @@
             <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
                 <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-400/30 text-amber-300 text-xs font-semibold">
                     <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                    <span>সারাদেশে আইনি সহায়তা ও মানবাধিকার সুরক্ষা</span>
+                    <span>সারাবিশ্বে আইনি সহায়তা ও মানবাধিকার সুরক্ষা</span>
                 </div>
                 
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
