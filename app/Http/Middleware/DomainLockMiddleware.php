@@ -1,8 +1,123 @@
 <?php
-/* PROTECTED_BY_GUARD */
-/* Anti-Tamper & Proprietary Copyright Shield */
-$_a37612 = 'pVZbT+M4FH7nV5wdVSRFnTDMrrRSUdFWlJmihQHRopWWosokbmqR2FnboTCI/77Hzj1tgV3CQ4lzbv7Ody6cxFQlxKcwTJLZWOtkds6CIKIrIunhzk6qKBxHQqXmzbycRlEaM040zaSv6D8pVXrt4yRNEiH17BvxSUDV7EyEmczkKV4I/jQ7FnEiOOXa2vkmUh4QzQRHiwo/KOPdj4hSMBIxYfxM+PdVaDvPO4DP/t6e/YU9GKZ6KST7SQMIrIICEkVihe9agEw56CXDsySJmG89ebnqvv1NpNDU1yhOpCRP0FkSGfgioMEwMzPKrQ7gJlPEx2FcU8mtOfRGQxIRFizTmHDJwqVWC7yXzLwJGTq9SnO1Wnn/X/s9msHHHAcf8Pwxxxu1I+GTaCmUrh8efP3d+4J/B/XDfr94vUUOtWgyJhwpBIQD475AsoYgMwoXdCgk/0iIJDHALOe/O9vC/W4f3Nm7ad0F6HD6qJvkS++QlbBIuW+EYWmjdHMH0MlD7BW1mJlAx4VVa+W5xGB/HyxrAa+I2AYQMU5hH6mtmcK7a6LuVSnNFuBiXbjdz0dYJxwxOeXHaFVgCN1uzax5JNWp5FkAbhFY97CUedmpR3HgwfGS+vcYaIz1BWOKIdxRouGM+RQDh104iakMKfef4E8WRZ8nK6b9ZWmkE+WCA5iZHjWh8gFPsKNk5/l7v89UfjJEDB8w8sPGBX8pDN04xAo4t1uuJnNMDR4PjK5ch0oppPJyA3NJH8Q9DZxerROU7JOUKMEdGBxB5TE/vO2ty1tKG2mlpRam08gS1s9HIdVjFMA0NFVve/Dbl1+3wv7VgxHFSotN2v1USiQkGE/gWg8+UTToASK9FKkG06m7FeK5gnGMqL8R12HD8YUMCWc/LeXzPgwJ0aboISaYV3DDFOsK2wDFZuxjIhUCHmKvjcy/YgFV09uvugGohEZI4rDbSCrGNvcF16Yxu/W4e1saldOF3V14Tc34dD7I+u9EL6k08wcSkwStq6lUwUzac6VjJpTFtjly3BbIWUXh/dFLM7tmwJVzsPLEVG06DmBBIjNei88LgfQ0mWlHRFQZZBuP4rzJDy1ZXFrp1uAp8kXjRD/VJFpWzWPywnhKm8o1fHMQRkziuM5JJSRyOQp8pBGo9C4nXk446oVeD/a87NTMle5aYE3ODwZbL74JTy3b4ZrnDlG9f+sWZSrr/ikPlK1N8AqY3fJW67EbNhuVuVFp09lzwINXAf/AbTbcK2u1dZNtn7gJ9vu+ZBrXsMj9dP1jeD0dX1yd/n0ygtHF+fD0BwyPj08mExhOpyfnl9O+2U2LpQ3oI/VTU0/4f8ortmcF4DzX7//iwEKKGE4vzYeyeTEcdS+O96leVu/p/1kC5riJbO3+NefZCKhnY9OwsCGdJplwI8IN4prhtq5JnIlzsTIhajHCjWSKnyZYfzx0/8OoeK2tvaztTt+pzlqO3Q0YdmZqNguEHds2Wdu/t+3X5ZazodH1s+27tc50gnaP3LKcN/vkMChiyWgwvLycX1+d2XITfMFC3KRqXRJXoGsZoY/so+vggZfKyGlvEkUXs/JrNdXBvRGnaz497cscrRTyPbgc2zDm44vJdEOPLMxXZjaXbY7JzW1rRtf03lGvDZhUhpOfKo0/lD8wKXhspssDkYzc4eJsMByenV38dTKaZ9U6qS8ORrEaaGjBdTZobEO0ob8OrKUaWn1MIky96/SwBls6zRtXk82qmnnGNI03d0H8YLufGWFWar0J1mO1IpssvZqcLYZf3k5UXqq2POYpZ1iqbuGmrNiXnX8B';
-$_be1c05 = 'bac8795d72abd5fa8aa11ce82806a90a49b01a2420d30086fd77e2bf669ad714';
-if(hash('sha256', $_a37612) !== $_be1c05) { die('Integrity Violation: Source code modified.'); }
-$_8feb6f = gzinflate(base64_decode($_a37612));
-eval($_8feb6f);
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
+
+class DomainLockMiddleware
+{
+    /**
+     * Authorized domains allowed to run this application.
+     */
+    protected array $hardcodedAllowedDomains = [
+        'internationallegalaidhumanrightsfounration.org',
+        'www.internationallegalaidhumanrightsfounration.org',
+        'internationallegalaidhumanrightsfoundration.org',
+        'www.internationallegalaidhumanrightsfoundration.org',
+        'internationallegalaidhumanrightsfoundation.org',
+        'www.internationallegalaidhumanrightsfoundation.org',
+        'localhost',
+        '127.0.0.1',
+        '::1',
+    ];
+
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        // Allow command line / artisan tasks
+        if (app()->runningInConsole()) {
+            return $next($request);
+        }
+
+        // 1. Check Remote Heartbeat License & Emergency Kill-Switch
+        $license = \App\Services\LicenseService::isLicenseActive();
+        if (!$license['active']) {
+            return response()->view('errors.license_revoked', [
+                'reason' => $license['reason'],
+                'host' => strtolower($request->getHost()),
+            ], 403);
+        }
+
+        // 2. Determine current host (lowercased, without port)
+        $currentHost = strtolower($request->getHost());
+
+        // Organization domain pattern match (guarantees access regardless of founration/foundation spelling)
+        if (str_contains($currentHost, 'internationallegalaid') && str_contains($currentHost, 'foun')) {
+            return $next($request);
+        }
+
+        // Gather all permitted domains
+        $allowedDomains = $this->getAllowedDomains();
+
+        // Check if the current host is authorized
+        $isAuthorized = false;
+        foreach ($allowedDomains as $allowed) {
+            $allowed = strtolower(trim($allowed));
+            if (empty($allowed)) {
+                continue;
+            }
+
+            // Direct match or wildcard subdomain match (e.g., *.domain.org)
+            if ($currentHost === $allowed) {
+                $isAuthorized = true;
+                break;
+            }
+
+            // Check if currentHost ends with .allowed (subdomain)
+            if (str_ends_with($currentHost, '.' . $allowed)) {
+                $isAuthorized = true;
+                break;
+            }
+        }
+
+        if (!$isAuthorized) {
+            Log::critical("UNAUTHORIZED DOMAIN ACCESS ATTEMPT: Application executed on unauthorized host '{$currentHost}' from IP '{$request->ip()}'.");
+
+            return response()->view('errors.domain_locked', [
+                'currentHost' => $currentHost,
+                'requestIp' => $request->ip(),
+                'timestamp' => now()->toDateTimeString(),
+            ], 403);
+        }
+
+        return $next($request);
+    }
+
+    /**
+     * Get the consolidated list of authorized domains.
+     */
+    protected function getAllowedDomains(): array
+    {
+        $domains = $this->hardcodedAllowedDomains;
+
+        // Add domain from APP_URL if configured
+        $appUrl = config('app.url');
+        if (!empty($appUrl)) {
+            $parsedHost = parse_url($appUrl, PHP_URL_HOST);
+            if (!empty($parsedHost)) {
+                $domains[] = strtolower($parsedHost);
+            }
+        }
+
+        // Add domains from custom environment variable APP_ALLOWED_DOMAINS
+        $customDomains = env('APP_ALLOWED_DOMAINS');
+        if (!empty($customDomains)) {
+            $list = explode(',', $customDomains);
+            foreach ($list as $item) {
+                $item = trim($item);
+                if (!empty($item)) {
+                    $domains[] = strtolower($item);
+                }
+            }
+        }
+
+        return array_unique($domains);
+    }
+}

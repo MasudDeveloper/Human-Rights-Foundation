@@ -9,13 +9,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/images/org_logo_new.png",
+      "src": "/images/icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/org_logo_new.png",
+      "src": "/images/icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"

@@ -651,12 +651,20 @@
                     deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
                     if (outcome === 'accepted') {
+                        installBtn.classList.remove('inline-flex');
                         installBtn.classList.add('hidden');
                     }
                     deferredPrompt = null;
                 }
             });
         }
+
+        window.addEventListener('appinstalled', () => {
+            if (installBtn) {
+                installBtn.classList.remove('inline-flex');
+                installBtn.classList.add('hidden');
+            }
+        });
     </script>
 
 

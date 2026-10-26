@@ -1,8 +1,93 @@
 <?php
-/* PROTECTED_BY_GUARD */
-/* Anti-Tamper & Proprietary Copyright Shield */
-$_5ad9d0 = 'rVfNbttGEL7rKQaBAVKGJCdu0IMMORBUtRaiJIXlpC1iw1iTK4k1xWV2lxaMRIe2h5x6KooeWiAomtBGm6RBTylQJK/CR+nsciWLpKT86iCSuzM7szPffLMbkBEVIXEoNMNwv0f5iedQsVUqRYJCx/ejkRcQSfd7URgyLvc/Jw5xqdhvEWdIt94ktSNl+EahLhugPccnQkAXrQeCGj9K90uAP4cFQkKr2dppH15vfwMNsEgYHnI6YpIe+qnKoZBERsLaKqjstpu9WzdXaHJKBAtQU6turK/rJ6xDa0idY/D6IIcUUBEViPRYAEYTPAFOxDkNpH8KxJHeCa0Z5Q39DKMjlAXlGz76UeBofU+YjTa1jl2uA+GcnGqddNPalQ24UoPOaERdDyMHPnOID3RE+YAGzikce75fFWNPOkPwAqjR4GSmi17b+G1b3U6rfbOHket0u4e9rzp7rR2rAn3iC1qGRqMBkkcUHjyApdKpmKXk8P3CPfXjVEY8gLuZQfWz0nBY0NhOjVWKIibwSsRK4pdJ/FcSP0rin5L47yT+Lzn7Ub+8SuIXkMT/6LeHSu4M/8/19Euc+F1/P9P/KPTnTONnfGipx8nZD/iJQ7/poe/Uf/walFb8Ws9rKfP+ELQRHHqSxL+ko9Pl4lf49u/UQbT4q5K3uzoz11U+emk+9rg3GFBO3XLNyuz8YGv2OSnNp3qzZgDnqNpy4YRyrz9FXIpukAzICfNc8BEPCIFMunVN1utDImxB/X69PiuZcj5ta2a9BhilAZUFpa2MirIwU1N4EJEIaeBS11LoyUxxesKOcSJvdiVi3hI1eeQs2cBF1VcUuJai5zyJn+o5ndH4HNJvUEBSks/n5B9pYMTfKyyo7xdaMZ0zCHmlR/9IQbTU6DuhK3ny2CoXwnCQzc5kda5MWFflYz70qtQrmSgHke8vNZnF8Sc12NUECzuUcHlEiYTml50U3DPBtZSEb3MfQZihnl5790579/D2btcqb2VW7vQhYJAqAs5r/mVB3xtEWGgVcGmfRL7UVaI3k2XDUShP7Qu7haIwSAqjQilUZhGsoAdju1zdJq67wyIu7M2r5VylvFdE52Io+Wm+XE2X2WHY1RpIBlwyn40ptzm9F1EhlUdYAWrezruDOxYhU+2qAaoh1+vSG1GGu9wswqq6jfQ1xMS5FPe2pEhvC8qrTexBMuVu08y+iAh3q7Okb2zWLltL6vfrKh43qspdvcL8/ooaB4vcVPV+kcvKMj5x2Yh4wVsY0dJIucKbdqQrtcsLN3Awj8pZtU2DXN0WkYNHKNGPfLu8qODWXCIJ5mJO5VsEhZ1LW5am51Ku9e9a5rxzANeugRnKHYX01Kz0F6yeolG5kuobdM4viadDQQbUrLWS0tTE8ymPvtaM9kwPPn2PlqpILxfm921ChYkjPEct605v5IELg0Uq+LS8IMorVpzvUSYZSxZduCoenOv1MeGBFwzsS7vtG7f22qAObtX04AbN1l7nTnOv/Rn0GYehIg/r/nwZTCzF1cpuHe4bDyaXltlb2bnfoXvnO7gxvFD2oBjQSdG7tDeYxiDIqcjz/4dR/JXNRYn9GI0Tz3rqsGjv7w05G5Mjn8IazeNS7S5ASWRwdrFLvCJRDobKAfMrscExTrB5BFSOGT8Gl40DJVDJLzfgeONDglK3Fh9ZJXO5we6JTVV6AV4LFG6iUA1tXkUAYTBKBQR6QZ/Zlmn505vRcNb6HX2mFcdeGOKh1p76ZhzHm48FNdy0ZvQbKdsUWtjHStuHduZ31p+UJqX/AQ==';
-$_94258a = 'ad279ac00085bbaf22a1c0cfb094847916bc11a6085d80a91e39cee3eb8b68ef';
-if(hash('sha256', $_5ad9d0) !== $_94258a) { die('Integrity Violation: Source code modified.'); }
-$_17efcd = gzinflate(base64_decode($_5ad9d0));
-eval($_17efcd);
+
+namespace App\Services;
+
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
+class LicenseService
+{
+    const CACHE_KEY = 'app_remote_license_status';
+    const CACHE_REASON_KEY = 'app_remote_license_reason';
+
+    /**
+     * Check if the application license is currently active.
+     */
+    public static function isLicenseActive(): array
+    {
+        // 1. Immediate local emergency kill-switch in .env
+        if (env('LICENSE_KILL_SWITCH', false) === true || env('LICENSE_KILL_SWITCH') === 'true') {
+            return [
+                'active' => false,
+                'reason' => 'সফটওয়্যার লাইসেন্স ডেভেলপার কর্তৃক জরুরি ভিত্তিতে স্থগিত করা হয়েছে (Local Kill-Switch Triggered).'
+            ];
+        }
+
+        // 2. Check cached verification status to avoid latency
+        if (Cache::has(self::CACHE_KEY)) {
+            $status = Cache::get(self::CACHE_KEY);
+            if ($status === 'suspended' || $status === 'revoked') {
+                return [
+                    'active' => false,
+                    'reason' => Cache::get(self::CACHE_REASON_KEY, 'লাইসেন্স নবায়ন বা পেমেন্ট সংক্রান্ত কারণে লাইসেন্স স্থগিত করা হয়েছে।')
+                ];
+            }
+            if ($status === 'active') {
+                return ['active' => true, 'reason' => null];
+            }
+        }
+
+        // 3. Remote Heartbeat API Check
+        $remoteUrl = env('LICENSE_SERVER_URL');
+
+        // If no remote URL is configured, default to active
+        if (empty($remoteUrl)) {
+            Cache::put(self::CACHE_KEY, 'active', now()->addHours(24));
+            return ['active' => true, 'reason' => null];
+        }
+
+        try {
+            $currentHost = strtolower(request()->getHost());
+            $response = Http::timeout(2)
+                ->withHeaders([
+                    'User-Agent' => 'LicenseGuard-Heartbeat/2.0',
+                    'X-App-Host' => $currentHost,
+                ])
+                ->get($remoteUrl, [
+                    'domain' => $currentHost,
+                    'version' => '1.0.0',
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $status = strtolower($data['status'] ?? $data['license_status'] ?? 'active');
+                $reason = $data['reason'] ?? $data['message'] ?? 'লাইসেন্স সাময়িকভাবে স্থগিত করা হয়েছে।';
+
+                if ($status === 'suspended' || $status === 'revoked' || $status === 'blocked') {
+                    Cache::put(self::CACHE_KEY, 'suspended', now()->addHours(6));
+                    Cache::put(self::CACHE_REASON_KEY, $reason, now()->addHours(6));
+
+                    Log::warning("REMOTE KILL-SWITCH ACTIVATED for host '{$currentHost}'. Reason: {$reason}");
+
+                    return [
+                        'active' => false,
+                        'reason' => $reason
+                    ];
+                }
+
+                // If remote says active
+                Cache::put(self::CACHE_KEY, 'active', now()->addHours(12));
+                return ['active' => true, 'reason' => null];
+            }
+        } catch (\Throwable $e) {
+            // In case of remote server timeout or temporary network downtime,
+            // gracefully allow application to continue for up to 24 hours
+            Log::info('Remote license heartbeat check skipped (network timeout): ' . $e->getMessage());
+            Cache::put(self::CACHE_KEY, 'active', now()->addHours(12));
+            return ['active' => true, 'reason' => null];
+        }
+
+        return ['active' => true, 'reason' => null];
+    }
+}
