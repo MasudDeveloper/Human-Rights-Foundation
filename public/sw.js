@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cit-human-rights-v1';
+const CACHE_NAME = 'cit-human-rights-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',
