@@ -186,7 +186,7 @@
                 </a>
 
                 <!-- PWA Install Button -->
-                <button id="pwaInstallBtn" class="hidden items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition">
+                <button id="pwaInstallBtn" class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition">
                     <i class="fa-solid fa-download"></i>
                     <span>অ্যাপ ইনস্টল</span>
                 </button>
@@ -632,14 +632,20 @@
             });
         }
 
-        // PWA Install Event Listener
         let deferredPrompt;
         const installBtn = document.getElementById('pwaInstallBtn');
+
+        // Check if already installed
+        const isAppInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (isAppInstalled && installBtn) {
+            installBtn.classList.add('hidden');
+            installBtn.classList.remove('inline-flex');
+        }
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if (installBtn) {
+            if (installBtn && !isAppInstalled) {
                 installBtn.classList.remove('hidden');
                 installBtn.classList.add('inline-flex');
             }
@@ -655,6 +661,8 @@
                         installBtn.classList.add('hidden');
                     }
                     deferredPrompt = null;
+                } else {
+                    alert("অ্যাপটি সরাসরি আপনার ডিভাইসে ইনস্টল করতে:\n১. ব্রাউজারের থ্রি-ডট (⋮) মেনু বা শেয়ার বাটনে চাপুন।\n২. 'Install App' বা 'Add to Home Screen' এ ট্যাপ করুন।");
                 }
             });
         }

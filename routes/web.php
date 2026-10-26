@@ -13,6 +13,29 @@ use Illuminate\Support\Facades\Route;
 | Public Web & PWA Routes
 |--------------------------------------------------------------------------
 */
+// PWA Manifest Route
+Route::get('/manifest.json', function () {
+    $manifestPath = public_path('manifest.json');
+    if (file_exists($manifestPath)) {
+        return response()->file($manifestPath, [
+            'Content-Type' => 'application/manifest+json; charset=utf-8',
+            'Cache-Control' => 'public, max-age=3600',
+        ]);
+    }
+    return response()->json([
+        'name' => 'আন্তর্জাতিক মানবাধিকার আইন সহায়তাকারী ফাউন্ডেশন',
+        'short_name' => 'মানবাধিকার',
+        'start_url' => '/',
+        'display' => 'standalone',
+        'background_color' => '#06182c',
+        'theme_color' => '#06182c',
+        'icons' => [
+            ['src' => '/images/icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
+            ['src' => '/images/icon-512.png', 'sizes' => '512x512', 'type' => 'image/png'],
+        ],
+    ], 200, ['Content-Type' => 'application/manifest+json; charset=utf-8']);
+});
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/track', [HomeController::class, 'track'])->name('track');
 Route::post('/track', [HomeController::class, 'track'])->name('track.post');
