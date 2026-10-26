@@ -185,12 +185,6 @@
                     </div>
                 </a>
 
-                <!-- PWA Install Button -->
-                <button id="pwaInstallBtn" class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition">
-                    <i class="fa-solid fa-download"></i>
-                    <span>অ্যাপ ইনস্টল</span>
-                </button>
-
                 <!-- Citizen Auth / Profile Dropdown -->
                 @auth
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
@@ -623,13 +617,8 @@
 
     <!-- Floating PWA Install Widget (Mobile & Desktop) -->
     <div id="pwaFloatingWidget" class="fixed bottom-20 right-3.5 sm:bottom-6 sm:right-6 z-40 select-none transition-all duration-300">
-        <!-- Close / Dismiss Badge -->
-        <button type="button" id="pwaDismissBtn" class="absolute -top-2 -right-1 w-5 h-5 bg-slate-900/90 text-slate-300 hover:text-white rounded-full flex items-center justify-center text-[10px] shadow-md border border-slate-600 z-10 transition hover:scale-110" title="বন্ধ করুন">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-
-        <!-- Floating Button Trigger -->
-        <button type="button" id="floatingPwaBtn" class="group flex flex-col items-center bg-gradient-to-b from-[#082038] via-[#051525] to-[#020b14] border-2 border-amber-400/90 shadow-[0_8px_25px_rgba(0,0,0,0.45)] hover:shadow-[0_12px_30px_rgba(245,158,11,0.35)] rounded-2xl p-2 sm:p-2.5 hover:scale-105 active:scale-95 transition-all duration-200">
+        <!-- Floating Button Trigger (Non-dismissable) -->
+        <button type="button" id="floatingPwaBtn" class="group flex flex-col items-center bg-gradient-to-b from-[#082038] via-[#051525] to-[#020b14] border-2 border-amber-400/90 shadow-[0_8px_25px_rgba(0,0,0,0.45)] hover:shadow-[0_12px_30px_rgba(245,158,11,0.35)] rounded-2xl p-2 sm:p-2.5 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
             <!-- App Icon with Download Badge -->
             <div class="relative w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-white/10 flex items-center justify-center p-1 border border-white/15 overflow-hidden">
                 <img src="{{ $siteLogo }}" alt="App Icon" class="w-full h-full object-contain filter drop-shadow">
@@ -638,13 +627,10 @@
                 </span>
             </div>
 
-            <!-- Text Label -->
+            <!-- Text Label: Only "Install Now" in English -->
             <div class="mt-1 text-center">
-                <span class="block text-[11px] sm:text-xs font-black text-amber-300 tracking-tight leading-tight group-hover:text-amber-200">
-                    ইনস্টল নাও
-                </span>
-                <span class="block text-[8px] sm:text-[9px] text-slate-300 font-semibold leading-tight">
-                    মোবাইল অ্যাপ
+                <span class="block text-[11px] sm:text-xs font-black text-amber-300 tracking-wide leading-tight group-hover:text-amber-200 font-sans">
+                    Install Now
                 </span>
             </div>
         </button>
@@ -709,36 +695,25 @@
         }
 
         let deferredPrompt = null;
-        const headerInstallBtn = document.getElementById('pwaInstallBtn');
         const floatingWidget = document.getElementById('pwaFloatingWidget');
         const floatingPwaBtn = document.getElementById('floatingPwaBtn');
-        const pwaDismissBtn = document.getElementById('pwaDismissBtn');
         const pwaGuideModal = document.getElementById('pwaGuideModal');
         const pwaCloseModalBtn = document.getElementById('pwaCloseModalBtn');
         const pwaModalOkBtn = document.getElementById('pwaModalOkBtn');
 
-        // Check if already running in standalone mode (installed app)
-        const isAppInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        // Check if app is already installed on device
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const isDeviceInstalled = isStandalone || localStorage.getItem('pwa_installed_on_device') === '1';
 
-        if (isAppInstalled) {
-            if (headerInstallBtn) headerInstallBtn.remove();
-            if (floatingWidget) floatingWidget.remove();
-        } else {
-            // Check if dismissed in this session
-            if (sessionStorage.getItem('pwa_widget_dismissed') === '1') {
-                if (floatingWidget) floatingWidget.classList.add('hidden');
-            }
+        if (isDeviceInstalled && floatingWidget) {
+            floatingWidget.remove();
         }
 
         // Capture PWA beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if (headerInstallBtn && !isAppInstalled) {
-                headerInstallBtn.classList.remove('hidden');
-                headerInstallBtn.classList.add('inline-flex');
-            }
-            if (floatingWidget && !isAppInstalled && sessionStorage.getItem('pwa_widget_dismissed') !== '1') {
+            if (floatingWidget && !isDeviceInstalled) {
                 floatingWidget.classList.remove('hidden');
             }
         });
@@ -749,7 +724,7 @@
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
-                    if (headerInstallBtn) headerInstallBtn.remove();
+                    localStorage.setItem('pwa_installed_on_device', '1');
                     if (floatingWidget) floatingWidget.remove();
                 }
                 deferredPrompt = null;
@@ -760,10 +735,6 @@
                     pwaGuideModal.classList.add('flex');
                 }
             }
-        }
-
-        if (headerInstallBtn) {
-            headerInstallBtn.addEventListener('click', handlePwaInstall);
         }
 
         if (floatingPwaBtn) {
@@ -785,18 +756,9 @@
             });
         }
 
-        // Dismiss floating widget
-        if (pwaDismissBtn && floatingWidget) {
-            pwaDismissBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                floatingWidget.classList.add('hidden');
-                sessionStorage.setItem('pwa_widget_dismissed', '1');
-            });
-        }
-
-        // Detect successful install
+        // Detect successful install on device
         window.addEventListener('appinstalled', () => {
-            if (headerInstallBtn) headerInstallBtn.remove();
+            localStorage.setItem('pwa_installed_on_device', '1');
             if (floatingWidget) floatingWidget.remove();
             closeGuideModal();
         });
