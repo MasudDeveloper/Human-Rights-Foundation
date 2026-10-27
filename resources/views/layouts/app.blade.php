@@ -279,6 +279,11 @@
                         <span>নোটিশ</span>
                     </a>
 
+                    <a href="{{ route('gallery') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('gallery') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
+                        <i class="fa-solid fa-camera-retro text-[11px]"></i>
+                        <span>গ্যালারি</span>
+                    </a>
+
                     <a href="{{ route('contact') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('contact') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-headset text-[11px]"></i>
                         <span>যোগাযোগ</span>
@@ -429,6 +434,10 @@
                                 <i class="fa-solid fa-bullhorn w-6 text-sm {{ request()->routeIs('notices') ? 'text-slate-950' : 'text-rose-400' }}"></i>
                                 <span>জরুরি নোটিশ</span>
                             </a>
+                            <a href="{{ route('gallery') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('gallery') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:bg-white/10' }}">
+                                <i class="fa-solid fa-camera-retro w-6 text-sm {{ request()->routeIs('gallery') ? 'text-slate-950' : 'text-purple-400' }}"></i>
+                                <span>ফটো ও কার্যক্রম গ্যালারি</span>
+                            </a>
                             <a href="{{ route('contact') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('contact') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:bg-white/10' }}">
                                 <i class="fa-solid fa-headset w-6 text-sm {{ request()->routeIs('contact') ? 'text-slate-950' : 'text-teal-300' }}"></i>
                                 <span>যোগাযোগ ও হেল্পলাইন</span>
@@ -547,6 +556,7 @@
                     <ul class="space-y-2 text-xs">
                         <li><a href="{{ route('about') }}" class="hover:text-amber-300 transition flex items-center"><i class="fa-solid fa-angle-right mr-1.5 text-slate-600"></i>সংস্থার লক্ষ্য ও আদর্শ</a></li>
                         <li><a href="{{ route('notices') }}" class="hover:text-amber-300 transition flex items-center"><i class="fa-solid fa-angle-right mr-1.5 text-slate-600"></i>জরুরি নোটিশ ও সংবাদ</a></li>
+                        <li><a href="{{ route('gallery') }}" class="hover:text-amber-300 transition flex items-center"><i class="fa-solid fa-angle-right mr-1.5 text-slate-600"></i>ফটো ও কার্যক্রম গ্যালারি</a></li>
                         <li><a href="{{ route('contact') }}" class="hover:text-amber-300 transition flex items-center"><i class="fa-solid fa-angle-right mr-1.5 text-slate-600"></i>যোগাযোগ ও কেন্দ্রীয় কার্যালয়</a></li>
                         <li><a href="{{ route('admin.login') }}" class="text-slate-500 hover:text-amber-400 transition flex items-center"><i class="fa-solid fa-lock mr-1.5 text-slate-700"></i>অ্যাডমিন লগইন</a></li>
                     </ul>

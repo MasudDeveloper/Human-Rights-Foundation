@@ -101,6 +101,19 @@
                 @endif
             </a>
 
+            <a href="{{ route('admin.gallery') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.gallery*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-camera-retro text-sm w-5"></i>
+                    <span>ফটো গ্যালারি</span>
+                </div>
+                @php
+                    $activeGalleryCount = \App\Models\Gallery::active()->count();
+                @endphp
+                @if($activeGalleryCount > 0)
+                    <span class="bg-amber-400 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded-full">{{ $activeGalleryCount }}</span>
+                @endif
+            </a>
+
             @if(session('admin_role') === 'super_admin')
                 <div class="pt-2">
                     <span class="text-[10px] font-bold text-amber-400/80 uppercase tracking-wider px-3">সুপার অ্যাডমিন মেনু</span>

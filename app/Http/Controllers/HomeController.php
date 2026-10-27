@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Complaint;
+use App\Models\Gallery;
 use App\Models\Member;
 use App\Models\Notice;
 use App\Models\User;
@@ -26,7 +27,10 @@ class HomeController extends Controller
         // Recent public notices for homepage
         $recentNotices = Notice::active()->orderBy('published_date', 'desc')->take(4)->get();
 
-        return view('home', compact('stats', 'recentComplaints', 'recentNotices'));
+        // Recent gallery photos for homepage preview
+        $recentPhotos = Gallery::active()->orderBy('sort_order', 'asc')->orderBy('event_date', 'desc')->orderBy('id', 'desc')->take(6)->get();
+
+        return view('home', compact('stats', 'recentComplaints', 'recentNotices', 'recentPhotos'));
     }
 
     public function track(Request $request)
@@ -112,5 +116,28 @@ class HomeController extends Controller
             ->get();
 
         return view('notice_detail', compact('notice', 'recentNotices'));
+    }
+
+    public function gallery(Request $request)
+    {
+        $query = Gallery::active()->orderBy('sort_order', 'asc')->orderBy('event_date', 'desc')->orderBy('id', 'desc');
+
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('title', 'like', "%{$s}%")
+                  ->orWhere('description', 'like', "%{$s}%");
+            });
+        }
+
+        $photos = $query->paginate(12)->withQueryString();
+        $categories = Gallery::active()->distinct()->whereNotNull('category')->pluck('category');
+        $currentCategory = $request->input('category', 'all');
+
+        return view('gallery', compact('photos', 'categories', 'currentCategory'));
     }
 }

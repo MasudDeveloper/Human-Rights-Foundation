@@ -45,6 +45,7 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::get('/notices', [HomeController::class, 'notices'])->name('notices');
 Route::get('/notices/{id}', [HomeController::class, 'noticeDetail'])->name('notices.show');
+Route::get('/gallery', [HomeController::class, 'gallery'])->name('gallery');
 
 // Public printable & ID Card views
 Route::get('/complaint/{id}/print', [ComplaintController::class, 'printView'])->name('complaint.print');
@@ -123,6 +124,15 @@ Route::prefix('admin')->group(function () {
         Route::post('/notices/{id}/update', [AdminController::class, 'updateNotice'])->name('admin.notices.update');
         Route::post('/notices/{id}/delete', [AdminController::class, 'deleteNotice'])->name('admin.notices.delete');
         Route::post('/notices/{id}/toggle-status', [AdminController::class, 'toggleNoticeStatus'])->name('admin.notices.toggle_status');
+
+        // Photo Gallery Management
+        Route::get('/gallery', [AdminController::class, 'gallery'])->name('admin.gallery');
+        Route::get('/gallery/create', [AdminController::class, 'createGallery'])->name('admin.gallery.create');
+        Route::post('/gallery', [AdminController::class, 'storeGallery'])->name('admin.gallery.store');
+        Route::get('/gallery/{id}/edit', [AdminController::class, 'editGallery'])->name('admin.gallery.edit');
+        Route::post('/gallery/{id}/update', [AdminController::class, 'updateGallery'])->name('admin.gallery.update');
+        Route::post('/gallery/{id}/delete', [AdminController::class, 'deleteGallery'])->name('admin.gallery.delete');
+        Route::post('/gallery/{id}/toggle-status', [AdminController::class, 'toggleGalleryStatus'])->name('admin.gallery.toggle_status');
 
         // Leave Impersonation (Available to admin who impersonated)
         Route::post('/leave-impersonation', [AdminController::class, 'leaveImpersonation'])->name('admin.leave_impersonation');

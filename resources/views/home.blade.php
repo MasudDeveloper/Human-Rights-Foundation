@@ -481,4 +481,47 @@
 </section>
 @endif
 
+<!-- Recent Photo Gallery Section -->
+@if(isset($recentPhotos) && $recentPhotos->count() > 0)
+<section class="py-14 bg-white border-t border-slate-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
+            <div>
+                <span class="text-xs font-bold text-amber-600 uppercase tracking-wider flex items-center">
+                    <i class="fa-solid fa-camera mr-1.5 text-amber-500"></i>সচিত্র প্রতিবেদন
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">সাম্প্রতিক কার্যক্রম ও ফটো গ্যালারি</h2>
+                <p class="text-xs sm:text-sm text-slate-600 mt-1">সংস্থার কেন্দ্রীয় ও মাঠপর্যায়ের বিভিন্ন সম্মেলন, ক্যাম্প ও কার্যক্রমের খণ্ডচিত্র</p>
+            </div>
+            <a href="{{ route('gallery') }}" class="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-400 text-xs font-bold transition shadow-sm">
+                <span>সকল ছবি দেখুন</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            @foreach($recentPhotos as $rp)
+                <a href="{{ route('gallery') }}" class="group bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col transform hover:-translate-y-1">
+                    <div class="relative aspect-[4/3] bg-slate-200 overflow-hidden">
+                        <img src="{{ $rp->image_url }}" alt="{{ $rp->title }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-2.5 left-2.5 bg-brand-950/80 backdrop-blur-md text-amber-300 border border-amber-400/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow">
+                            {{ $rp->category }}
+                        </span>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
+                        <h3 class="text-sm font-bold text-slate-900 group-hover:text-brand-700 transition line-clamp-1">
+                            {{ $rp->title }}
+                        </h3>
+                        <div class="mt-2.5 pt-2.5 border-t border-slate-200/70 flex items-center justify-between text-[11px] text-slate-400">
+                            <span><i class="fa-regular fa-calendar mr-1 text-amber-500"></i>{{ $rp->formatted_date }}</span>
+                            <span class="text-brand-700 font-semibold flex items-center">গ্যালারিতে দেখুন <i class="fa-solid fa-arrow-right text-[9px] ml-1"></i></span>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
 @endsection

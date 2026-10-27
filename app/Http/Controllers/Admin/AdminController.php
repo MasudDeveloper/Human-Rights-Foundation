@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AdminUser;
 use App\Models\Complaint;
+use App\Models\Gallery;
 use App\Models\Member;
 use App\Models\Notice;
 use App\Models\Setting;
@@ -645,6 +646,134 @@ class AdminController extends Controller
 
         $statusText = $notice->is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়';
         return back()->with('success', "নোটিশটি সফলভাবে {$statusText} করা হয়েছে।");
+    }
+
+    // ==========================================
+    // Photo Gallery Management
+    // ==========================================
+    public function gallery(Request $request)
+    {
+        $query = Gallery::orderBy('sort_order', 'asc')->orderBy('event_date', 'desc')->orderBy('id', 'desc');
+
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('title', 'like', "%{$s}%")
+                  ->orWhere('description', 'like', "%{$s}%");
+            });
+        }
+
+        $photos = $query->paginate(12)->withQueryString();
+        $totalPhotos = Gallery::count();
+        $activePhotos = Gallery::where('is_active', true)->count();
+        $categories = Gallery::distinct()->whereNotNull('category')->pluck('category');
+
+        return view('admin.gallery.index', compact('photos', 'totalPhotos', 'activePhotos', 'categories'));
+    }
+
+    public function createGallery()
+    {
+        return view('admin.gallery.create');
+    }
+
+    public function storeGallery(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'category' => 'nullable|string|max:100',
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:15360',
+            'event_date' => 'nullable|date',
+            'sort_order' => 'nullable|integer',
+            'description' => 'nullable|string',
+        ]);
+
+        $photo = new Gallery();
+        $photo->title = $request->title;
+        $photo->category = $request->filled('category') ? $request->category : 'কার্যক্রম';
+        $photo->description = $request->description;
+        $photo->event_date = $request->event_date;
+        $photo->sort_order = $request->filled('sort_order') ? (int) $request->sort_order : 0;
+        $photo->is_active = $request->has('is_active') ? $request->boolean('is_active') : true;
+        $photo->created_by = session('admin_name') ?: session('admin_username');
+
+        if ($request->hasFile('image')) {
+            File::ensureDirectoryExists(public_path('uploads/gallery'));
+            $file = $request->file('image');
+            $filename = 'gallery_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/gallery'), $filename);
+            $photo->image_path = 'uploads/gallery/' . $filename;
+        }
+
+        $photo->save();
+
+        return redirect()->route('admin.gallery')->with('success', 'নতুন ছবি সফলভাবে গ্যালারিতে যুক্ত করা হয়েছে!');
+    }
+
+    public function editGallery($id)
+    {
+        $photo = Gallery::findOrFail($id);
+        return view('admin.gallery.edit', compact('photo'));
+    }
+
+    public function updateGallery(Request $request, $id)
+    {
+        $photo = Gallery::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'category' => 'nullable|string|max:100',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:15360',
+            'event_date' => 'nullable|date',
+            'sort_order' => 'nullable|integer',
+            'description' => 'nullable|string',
+        ]);
+
+        $photo->title = $request->title;
+        $photo->category = $request->filled('category') ? $request->category : 'কার্যক্রম';
+        $photo->description = $request->description;
+        $photo->event_date = $request->event_date;
+        $photo->sort_order = $request->filled('sort_order') ? (int) $request->sort_order : 0;
+        $photo->is_active = $request->boolean('is_active');
+
+        if ($request->hasFile('image')) {
+            if ($photo->image_path && File::exists(public_path($photo->image_path))) {
+                File::delete(public_path($photo->image_path));
+            }
+            File::ensureDirectoryExists(public_path('uploads/gallery'));
+            $file = $request->file('image');
+            $filename = 'gallery_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/gallery'), $filename);
+            $photo->image_path = 'uploads/gallery/' . $filename;
+        }
+
+        $photo->save();
+
+        return redirect()->route('admin.gallery')->with('success', 'গ্যালারির ছবি সফলভাবে আপডেট করা হয়েছে!');
+    }
+
+    public function deleteGallery($id)
+    {
+        $photo = Gallery::findOrFail($id);
+        if ($photo->image_path && File::exists(public_path($photo->image_path))) {
+            File::delete(public_path($photo->image_path));
+        }
+        $photo->delete();
+
+        return back()->with('success', 'ছবিটি সফলভাবে গ্যালারি থেকে মুছে ফেলা হয়েছে।');
+    }
+
+    public function toggleGalleryStatus($id)
+    {
+        $photo = Gallery::findOrFail($id);
+        $photo->is_active = !$photo->is_active;
+        $photo->save();
+
+        $statusText = $photo->is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়';
+        return back()->with('success', "ছবিটি সফলভাবে {$statusText} করা হয়েছে।");
     }
 
     private function formatBytes($bytes, $precision = 1)
