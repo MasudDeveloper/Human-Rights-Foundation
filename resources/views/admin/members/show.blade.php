@@ -138,6 +138,64 @@
         </div>
     </div>
 
+    <!-- Documents & NID Cards Section -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b pb-2 flex items-center">
+            <i class="fa-solid fa-file-image mr-2 text-purple-600 text-sm"></i>
+            <span>সংযুক্ত ছবি ও জাতীয় পরিচয়পত্র (Documents & NID)</span>
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- Member Photo -->
+            <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/50 text-center">
+                <span class="block text-xs font-bold text-slate-700 mb-2">সদস্যের পাসপোর্ট সাইজ ছবি</span>
+                @if($member->effective_photo)
+                    <a href="{{ $member->effective_photo }}" target="_blank" class="block group">
+                        <img src="{{ $member->effective_photo }}" alt="Photo" class="h-44 w-36 mx-auto object-cover rounded-xl border shadow-sm group-hover:opacity-90 transition">
+                        <span class="block text-[11px] text-blue-600 font-semibold mt-2 group-hover:underline"><i class="fa-solid fa-up-right-from-square mr-1"></i>বড় আকারে দেখুন</span>
+                    </a>
+                @else
+                    <div class="h-44 w-36 mx-auto bg-slate-100 rounded-xl border border-dashed flex flex-col items-center justify-center text-slate-400">
+                        <i class="fa-solid fa-user text-3xl mb-1"></i>
+                        <span class="text-[10px]">কোনো ছবি নেই</span>
+                    </div>
+                @endif
+            </div>
+
+            <!-- NID Front -->
+            <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/50 text-center">
+                <span class="block text-xs font-bold text-slate-700 mb-2">NID সামনের পাতা</span>
+                @if($member->effective_nid_front)
+                    <a href="{{ $member->effective_nid_front }}" target="_blank" class="block group">
+                        <img src="{{ $member->effective_nid_front }}" alt="NID Front" class="h-44 w-full mx-auto object-contain rounded-xl border shadow-sm group-hover:opacity-90 transition bg-white">
+                        <span class="block text-[11px] text-blue-600 font-semibold mt-2 group-hover:underline"><i class="fa-solid fa-up-right-from-square mr-1"></i>বড় আকারে দেখুন</span>
+                    </a>
+                @else
+                    <div class="h-44 w-full mx-auto bg-slate-100 rounded-xl border border-dashed flex flex-col items-center justify-center text-slate-400">
+                        <i class="fa-solid fa-id-card text-3xl mb-1"></i>
+                        <span class="text-[10px]">সামনের পাতার ছবি নেই</span>
+                    </div>
+                @endif
+            </div>
+
+            <!-- NID Back -->
+            <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/50 text-center">
+                <span class="block text-xs font-bold text-slate-700 mb-2">NID পিছনের পাতা</span>
+                @if($member->effective_nid_back)
+                    <a href="{{ $member->effective_nid_back }}" target="_blank" class="block group">
+                        <img src="{{ $member->effective_nid_back }}" alt="NID Back" class="h-44 w-full mx-auto object-contain rounded-xl border shadow-sm group-hover:opacity-90 transition bg-white">
+                        <span class="block text-[11px] text-blue-600 font-semibold mt-2 group-hover:underline"><i class="fa-solid fa-up-right-from-square mr-1"></i>বড় আকারে দেখুন</span>
+                    </a>
+                @else
+                    <div class="h-44 w-full mx-auto bg-slate-100 rounded-xl border border-dashed flex flex-col items-center justify-center text-slate-400">
+                        <i class="fa-solid fa-id-card text-3xl mb-1"></i>
+                        <span class="text-[10px]">পিছনের পাতার ছবি নেই</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>

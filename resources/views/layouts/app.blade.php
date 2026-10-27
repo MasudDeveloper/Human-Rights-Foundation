@@ -284,6 +284,13 @@
                         <span>গ্যালারি</span>
                     </a>
 
+                    @if(!empty($siteSettings['news_link']))
+                        <a href="{{ $siteSettings['news_link'] }}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 text-slate-200 hover:text-white hover:bg-white/10">
+                            <i class="fa-solid fa-newspaper text-amber-400 text-[11px]"></i>
+                            <span>নিউজ</span>
+                        </a>
+                    @endif
+
                     <a href="{{ route('contact') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('contact') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-headset text-[11px]"></i>
                         <span>যোগাযোগ</span>
@@ -438,6 +445,12 @@
                                 <i class="fa-solid fa-camera-retro w-6 text-sm {{ request()->routeIs('gallery') ? 'text-slate-950' : 'text-purple-400' }}"></i>
                                 <span>ফটো ও কার্যক্রম গ্যালারি</span>
                             </a>
+                            @if(!empty($siteSettings['news_link']))
+                                <a href="{{ $siteSettings['news_link'] }}" target="_blank" rel="noopener noreferrer" class="flex items-center px-3.5 py-2.5 rounded-xl transition text-slate-200 hover:bg-white/10">
+                                    <i class="fa-solid fa-newspaper w-6 text-sm text-amber-400"></i>
+                                    <span>নিউজ পোর্টাল</span>
+                                </a>
+                            @endif
                             <a href="{{ route('contact') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('contact') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:bg-white/10' }}">
                                 <i class="fa-solid fa-headset w-6 text-sm {{ request()->routeIs('contact') ? 'text-slate-950' : 'text-teal-300' }}"></i>
                                 <span>যোগাযোগ ও হেল্পলাইন</span>

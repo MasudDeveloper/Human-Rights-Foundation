@@ -15,6 +15,8 @@ class Member extends Model
         'user_id',
         'member_id_card_number',
         'id_card_photo',
+        'nid_front_image',
+        'nid_back_image',
         'id_card_issue_date',
         'id_card_expiry_date',
         'id_card_status',
@@ -72,6 +74,28 @@ class Member extends Model
         }
         if ($this->user && $this->user->profile_image && file_exists(public_path($this->user->profile_image))) {
             return asset($this->user->profile_image);
+        }
+        return null;
+    }
+
+    public function getEffectiveNidFrontAttribute(): ?string
+    {
+        if ($this->nid_front_image && file_exists(public_path($this->nid_front_image))) {
+            return asset($this->nid_front_image);
+        }
+        if ($this->user && $this->user->nid_front_image && file_exists(public_path($this->user->nid_front_image))) {
+            return asset($this->user->nid_front_image);
+        }
+        return null;
+    }
+
+    public function getEffectiveNidBackAttribute(): ?string
+    {
+        if ($this->nid_back_image && file_exists(public_path($this->nid_back_image))) {
+            return asset($this->nid_back_image);
+        }
+        if ($this->user && $this->user->nid_back_image && file_exists(public_path($this->user->nid_back_image))) {
+            return asset($this->user->nid_back_image);
         }
         return null;
     }

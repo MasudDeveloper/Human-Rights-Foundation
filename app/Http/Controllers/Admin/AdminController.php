@@ -425,6 +425,7 @@ class AdminController extends Controller
             'site_slogan',
             'site_facebook',
             'site_youtube',
+            'news_link',
             'licence_no',
             'site_website',
             'id_card_prefix',

@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        <form method="POST" action="{{ route('member.store') }}" class="space-y-8">
+        <form method="POST" action="{{ route('member.store') }}" enctype="multipart/form-data" class="space-y-8">
             @csrf
 
             <!-- Section 1: Designation & Personal Info -->
@@ -203,11 +203,75 @@
                 </div>
             </div>
 
-            <!-- Section 4: Membership Fee Payment -->
+            <!-- Section 4: Photo and NID Document Uploads -->
+            <div class="bg-slate-50/70 p-5 sm:p-6 rounded-2xl border border-slate-200/80">
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center border-b pb-2">
+                    <i class="fa-solid fa-camera mr-2 text-purple-600 text-sm"></i>
+                    <span>৪. ছবি ও জাতীয় পরিচয়পত্র (NID) আপলোড</span>
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Profile Photo -->
+                    <div class="border-2 border-dashed border-slate-300 hover:border-blue-500 p-4 rounded-2xl text-center bg-white transition group cursor-pointer" onclick="document.getElementById('inputPhoto').click()">
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-2 overflow-hidden border border-blue-100">
+                                <img id="previewPhoto" src="{{ $user->profile_image ? asset($user->profile_image) : '' }}" class="{{ $user->profile_image ? '' : 'hidden' }} w-full h-full object-cover">
+                                <i id="iconPhoto" class="fa-solid fa-user text-2xl {{ $user->profile_image ? 'hidden' : '' }}"></i>
+                            </div>
+                            <span class="block text-xs font-bold text-slate-800">
+                                পাসপোর্ট সাইজ ছবি <span class="text-rose-500">*</span>
+                            </span>
+                            <span class="block text-[10px] text-slate-400 mt-0.5">ক্লিক করে ছবি নির্বাচন করুন</span>
+                            @if($user->profile_image)
+                                <span class="inline-block mt-1 text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold">সংরক্ষিত আছে (পরিবর্তন করতে পারেন)</span>
+                            @endif
+                        </div>
+                        <input type="file" id="inputPhoto" name="photo" accept="image/*" {{ $user->profile_image ? '' : 'required' }} class="hidden" onchange="previewImg(this, 'previewPhoto', 'iconPhoto')">
+                    </div>
+
+                    <!-- NID Front -->
+                    <div class="border-2 border-dashed border-slate-300 hover:border-blue-500 p-4 rounded-2xl text-center bg-white transition group cursor-pointer" onclick="document.getElementById('inputNidFront').click()">
+                        <div class="flex flex-col items-center">
+                            <div class="w-24 h-16 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-2 overflow-hidden border border-indigo-100">
+                                <img id="previewNidFront" src="{{ $user->nid_front_image ? asset($user->nid_front_image) : '' }}" class="{{ $user->nid_front_image ? '' : 'hidden' }} w-full h-full object-cover">
+                                <i id="iconNidFront" class="fa-solid fa-id-card text-2xl {{ $user->nid_front_image ? 'hidden' : '' }}"></i>
+                            </div>
+                            <span class="block text-xs font-bold text-slate-800">
+                                NID সামনের পাতা <span class="text-rose-500">*</span>
+                            </span>
+                            <span class="block text-[10px] text-slate-400 mt-0.5">পরিষ্কার ছবি নির্বাচন করুন</span>
+                            @if($user->nid_front_image)
+                                <span class="inline-block mt-1 text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold">সংরক্ষিত আছে (পরিবর্তন করতে পারেন)</span>
+                            @endif
+                        </div>
+                        <input type="file" id="inputNidFront" name="nid_front" accept="image/*" {{ $user->nid_front_image ? '' : 'required' }} class="hidden" onchange="previewImg(this, 'previewNidFront', 'iconNidFront')">
+                    </div>
+
+                    <!-- NID Back -->
+                    <div class="border-2 border-dashed border-slate-300 hover:border-blue-500 p-4 rounded-2xl text-center bg-white transition group cursor-pointer" onclick="document.getElementById('inputNidBack').click()">
+                        <div class="flex flex-col items-center">
+                            <div class="w-24 h-16 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-2 overflow-hidden border border-purple-100">
+                                <img id="previewNidBack" src="{{ $user->nid_back_image ? asset($user->nid_back_image) : '' }}" class="{{ $user->nid_back_image ? '' : 'hidden' }} w-full h-full object-cover">
+                                <i id="iconNidBack" class="fa-solid fa-id-card text-2xl {{ $user->nid_back_image ? 'hidden' : '' }}"></i>
+                            </div>
+                            <span class="block text-xs font-bold text-slate-800">
+                                NID পিছনের পাতা <span class="text-rose-500">*</span>
+                            </span>
+                            <span class="block text-[10px] text-slate-400 mt-0.5">পরিষ্কার ছবি নির্বাচন করুন</span>
+                            @if($user->nid_back_image)
+                                <span class="inline-block mt-1 text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold">সংরক্ষিত আছে (পরিবর্তন করতে পারেন)</span>
+                            @endif
+                        </div>
+                        <input type="file" id="inputNidBack" name="nid_back" accept="image/*" {{ $user->nid_back_image ? '' : 'required' }} class="hidden" onchange="previewImg(this, 'previewNidBack', 'iconNidBack')">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Membership Fee Payment -->
             <div class="bg-gradient-to-br from-blue-50 to-indigo-50/40 p-5 sm:p-6 rounded-2xl border border-blue-200">
                 <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-4 flex items-center border-b border-blue-200 pb-2">
                     <i class="fa-solid fa-receipt mr-2 text-blue-700 text-sm"></i>
-                    <span>৪. সদস্য নিবন্ধন ফি পরিশোধ</span>
+                    <span>৫. সদস্য নিবন্ধন ফি পরিশোধ</span>
                 </h3>
 
                 <div class="bg-white/80 p-4 rounded-xl border border-blue-200/60 mb-5 text-xs text-slate-700">
@@ -264,4 +328,24 @@
 
     </div>
 </div>
+
+<script>
+    function previewImg(input, imgId, iconId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(imgId);
+                const icon = document.getElementById(iconId);
+                if (img) {
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                }
+                if (icon) {
+                    icon.classList.add('hidden');
+                }
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endsection

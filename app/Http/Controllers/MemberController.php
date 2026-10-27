@@ -31,42 +31,94 @@ class MemberController extends Controller
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+
+        $photoRule = ($user && $user->profile_image) ? 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120' : 'required|image|mimes:jpeg,png,jpg,webp|max:5120';
+        $nidFrontRule = ($user && $user->nid_front_image) ? 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120' : 'required|image|mimes:jpeg,png,jpg,webp|max:5120';
+        $nidBackRule = ($user && $user->nid_back_image) ? 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120' : 'required|image|mimes:jpeg,png,jpg,webp|max:5120';
+
         $request->validate([
             'post_name' => 'required|string',
             'bangla_name' => 'required|string|max:255',
             'english_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
-            'nid' => 'required|string|max:50',
-            'date_of_birth' => 'required',
-            'district' => 'required|string',
-            'thana' => 'required|string',
-            'education' => 'required|string',
-            'current_job' => 'required|string',
+            'photo' => $photoRule,
+            'nid_front' => $nidFrontRule,
+            'nid_back' => $nidBackRule,
             'payment_gateway' => 'required|string',
             'payment_number' => 'required|string',
             'transaction_id' => 'required|string',
+            'nid' => 'nullable|string|max:50',
+            'date_of_birth' => 'nullable',
+            'district' => 'nullable|string',
+            'thana' => 'nullable|string',
+            'education' => 'nullable|string',
+            'current_job' => 'nullable|string',
         ], [
             'post_name.required' => 'আবেদনকৃত পদবী নির্বাচন করুন।',
             'bangla_name.required' => 'বাংলায় পূর্ণ নাম লিখুন।',
             'english_name.required' => 'ইংরেজিতে পূর্ণ নাম লিখুন।',
             'phone_number.required' => 'মোবাইল নম্বর দিন।',
-            'nid.required' => 'জাতীয় পরিচয়পত্র নম্বর দিন।',
-            'district.required' => 'স্থায়ী জেলা দিন।',
-            'thana.required' => 'স্থায়ী থানা দিন।',
-            'education.required' => 'শিক্ষাগত যোগ্যতা লিখুন।',
-            'current_job.required' => 'বর্তমান পেশা লিখুন।',
+            'photo.required' => 'সদস্যের পাসপোর্ট সাইজ ছবি আপলোড করুন।',
+            'photo.image' => 'ছবির ফরম্যাট JPG বা PNG হতে হবে।',
+            'nid_front.required' => 'জাতীয় পরিচয়পত্রের সামনের পাতার ছবি আপলোড করুন।',
+            'nid_front.image' => 'এনআইডি সামনের পাতার ছবির ফরম্যাট JPG বা PNG হতে হবে।',
+            'nid_back.required' => 'জাতীয় পরিচয়পত্রের পিছনের পাতার ছবি আপলোড করুন।',
+            'nid_back.image' => 'এনআইডি পিছনের পাতার ছবির ফরম্যাট JPG বা PNG হতে হবে।',
             'payment_gateway.required' => 'পেমেন্ট মেথড নির্বাচন করুন।',
             'payment_number.required' => 'প্রেরক নম্বর দিন।',
             'transaction_id.required' => 'ট্রানজেকশন আইডি দিন।',
         ]);
 
-        $user = Auth::user();
+        // Upload Profile Photo
+        $photoPath = $user->profile_image ?? null;
+        if ($request->hasFile('photo')) {
+            $photoDir = public_path('uploads/members');
+            if (!file_exists($photoDir)) mkdir($photoDir, 0777, true);
+            $photoName = 'photo_' . uniqid() . '.' . $request->file('photo')->getClientOriginalExtension();
+            $request->file('photo')->move($photoDir, $photoName);
+            $photoPath = 'uploads/members/' . $photoName;
+            $user->profile_image = $photoPath;
+        }
+
+        // Upload NID Front
+        $nidFrontPath = $user->nid_front_image ?? null;
+        if ($request->hasFile('nid_front')) {
+            $nidFrontDir = public_path('uploads/nid_front');
+            if (!file_exists($nidFrontDir)) mkdir($nidFrontDir, 0777, true);
+            $nidFrontName = 'nid_f_' . uniqid() . '.' . $request->file('nid_front')->getClientOriginalExtension();
+            $request->file('nid_front')->move($nidFrontDir, $nidFrontName);
+            $nidFrontPath = 'uploads/nid_front/' . $nidFrontName;
+            $user->nid_front_image = $nidFrontPath;
+        }
+
+        // Upload NID Back
+        $nidBackPath = $user->nid_back_image ?? null;
+        if ($request->hasFile('nid_back')) {
+            $nidBackDir = public_path('uploads/nid_back');
+            if (!file_exists($nidBackDir)) mkdir($nidBackDir, 0777, true);
+            $nidBackName = 'nid_b_' . uniqid() . '.' . $request->file('nid_back')->getClientOriginalExtension();
+            $request->file('nid_back')->move($nidBackDir, $nidBackName);
+            $nidBackPath = 'uploads/nid_back/' . $nidBackName;
+            $user->nid_back_image = $nidBackPath;
+        }
+
+        if ($request->filled('nid')) {
+            $user->nid_number = $request->nid;
+        }
+        if ($request->filled('date_of_birth')) {
+            $user->date_of_birth = $request->date_of_birth;
+        }
+        $user->save();
 
         $prefix = Setting::get('id_card_prefix', '');
 
         $member = Member::create([
             'user_id' => $user->id,
             'member_id_card_number' => null, // Generated upon approval
+            'id_card_photo' => $photoPath,
+            'nid_front_image' => $nidFrontPath,
+            'nid_back_image' => $nidBackPath,
             'id_card_status' => 'not_generated',
             'post_name' => $request->post_name,
             'bangla_name' => $request->bangla_name,
@@ -75,18 +127,18 @@ class MemberController extends Controller
             'mother_name' => $request->mother_name ?? '',
             'village' => $request->village ?? '',
             'post_office' => $request->post_office ?? '',
-            'thana' => $request->thana,
-            'district' => $request->district,
+            'thana' => $request->thana ?? '',
+            'district' => $request->district ?? '',
             'village2' => $request->village2 ?? '',
             'post_office2' => $request->post_office2 ?? '',
             'thana2' => $request->thana2 ?? '',
             'district2' => $request->district2 ?? '',
-            'education' => $request->education,
-            'date_of_birth' => $request->date_of_birth,
-            'nid' => $request->nid,
+            'education' => $request->education ?? '',
+            'date_of_birth' => $request->date_of_birth ?? ($user->date_of_birth ?? ''),
+            'nid' => $request->nid ?? ($user->nid_number ?? ''),
             'blood_group' => $request->blood_group ?? '',
             'jonmodag' => $request->jonmodag ?? '',
-            'current_job' => $request->current_job,
+            'current_job' => $request->current_job ?? '',
             'nationality' => $request->nationality ?? 'বাংলাদেশী',
             'passport_number' => $request->passport_number ?? '',
             'marital_status' => $request->marital_status ?? 'অবিবাহিত',
