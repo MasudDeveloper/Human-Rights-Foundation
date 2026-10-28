@@ -32,7 +32,7 @@ class Setting extends Model
             'site_slogan' => 'ন্যায় বিচার প্রতিষ্ঠায় আপোষহীন',
             'site_facebook' => 'https://facebook.com',
             'site_youtube' => 'https://youtube.com',
-            'news_link' => '',
+            'news_link' => 'https://bnews24.com/?p=40163',
             'id_card_prefix' => '',
             'id_card_validity_years' => '2',
             'authorized_signature_name' => 'MOINUR RASHID CHOWDHURY',

@@ -294,12 +294,12 @@
                 <div class="p-4 bg-amber-50/60 rounded-2xl border border-amber-200/80">
                     <label class="block font-bold text-slate-900 mb-1 flex items-center text-xs">
                         <i class="fa-solid fa-newspaper text-amber-600 mr-2 text-sm"></i>
-                        <span>নিউজ পোর্টাল লিংক (News Portal Link)</span>
+                        <span>সারা দেশের খবর লিংক (News Portal Link)</span>
                     </label>
-                    <input type="url" name="news_link" value="{{ old('news_link', $siteSettings['news_link'] ?? '') }}" placeholder="https://example-news.com"
+                    <input type="url" name="news_link" value="{{ old('news_link', $siteSettings['news_link'] ?? 'https://bnews24.com/?p=40163') }}" placeholder="https://bnews24.com/?p=40163"
                         class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-slate-900 bg-white">
                     <span class="text-[10px] text-slate-500 mt-1 block">
-                        ★ এখানে কোনো লিংক দিলে ওয়েবসাইটের হেডার মেনু ও মোবাইল মেনুতে <strong>"নিউজ"</strong> বাটন প্রদর্শিত হবে এবং ভিজিটররা ক্লিক করলে সেই লিংকে যেতে পারবে। খালি রাখলে বাটনটি স্বয়ংক্রিয়ভাবে প্রদর্শিত হবে না।
+                        ★ ওয়েবসাইটের হেডার মেনু ও মোবাইল মেনুতে <strong>"সারা দেশের খবর"</strong> লিংকে ক্লিক করলে এই ঠিকানায় নিয়ে যাবে (যেমন: https://bnews24.com/?p=40163)।
                     </span>
                 </div>
 
