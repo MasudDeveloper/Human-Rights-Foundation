@@ -1,8 +1,9 @@
-const CACHE_NAME = 'cit-human-rights-v2';
+const CACHE_NAME = 'cit-human-rights-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',
   '/images/cit_logo.png',
+  '/images/chairman_banner.png',
   '/images/crime_banner.jpg',
   '/images/icon-192.png',
   '/images/icon-512.png',

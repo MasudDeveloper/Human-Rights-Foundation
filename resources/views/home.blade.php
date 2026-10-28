@@ -46,8 +46,8 @@
                     </a>
                 </div>
 
-                <!-- Verified Stats Ribbon -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-brand-700/60 max-w-2xl">
+                <!-- Verified Stats Ribbon (Desktop Only) -->
+                <div class="hidden lg:grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-brand-700/60 max-w-2xl">
                     <div class="bg-brand-900/60 p-3 rounded-xl border border-brand-700/40 text-center">
                         <p class="text-2xl font-black text-amber-400 font-mono">{{ $stats['total_complaints'] }}+</p>
                         <p class="text-[11px] text-slate-300">মোট অভিযোগ</p>
@@ -88,6 +88,26 @@
                             <span>কল করুন</span>
                         </a>
                     </div>
+                </div>
+            </div>
+
+            <!-- Verified Stats Ribbon (Mobile Only - positioned directly after Chairman Banner) -->
+            <div class="lg:hidden w-full max-w-sm sm:max-w-md mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                <div class="bg-brand-900/60 p-3 rounded-xl border border-brand-700/40 text-center">
+                    <p class="text-2xl font-black text-amber-400 font-mono">{{ $stats['total_complaints'] }}+</p>
+                    <p class="text-[11px] text-slate-300">মোট অভিযোগ</p>
+                </div>
+                <div class="bg-brand-900/60 p-3 rounded-xl border border-brand-700/40 text-center">
+                    <p class="text-2xl font-black text-emerald-400 font-mono">{{ $stats['completed'] }}+</p>
+                    <p class="text-[11px] text-slate-300">নিষ্পত্তিকৃত</p>
+                </div>
+                <div class="bg-brand-900/60 p-3 rounded-xl border border-brand-700/40 text-center">
+                    <p class="text-2xl font-black text-blue-400 font-mono">{{ $stats['investigated'] }}+</p>
+                    <p class="text-[11px] text-slate-300">তদন্তাধীন</p>
+                </div>
+                <div class="bg-brand-900/60 p-3 rounded-xl border border-brand-700/40 text-center">
+                    <p class="text-2xl font-black text-amber-300 font-mono">{{ $stats['total_members'] }}+</p>
+                    <p class="text-[11px] text-slate-300">সক্রিয় সদস্য</p>
                 </div>
             </div>
 
