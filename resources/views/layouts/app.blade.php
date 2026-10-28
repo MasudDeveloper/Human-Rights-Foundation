@@ -560,7 +560,6 @@
                         <li><a href="{{ route('gallery') }}" class="hover:text-amber-300 transition flex items-center"><i class="fa-solid fa-angle-right mr-1.5 text-slate-600"></i>ফটো গ্যালারি</a></li>
                         <li><a href="{{ !empty($siteSettings['news_link']) ? $siteSettings['news_link'] : 'https://bnews24.com/?p=40163' }}" target="_blank" rel="noopener noreferrer" class="hover:text-amber-300 transition flex items-center"><i class="fa-solid fa-newspaper mr-1.5 text-amber-400"></i>সারা দেশের খবর</a></li>
                         <li><a href="{{ route('contact') }}" class="hover:text-amber-300 transition flex items-center"><i class="fa-solid fa-angle-right mr-1.5 text-slate-600"></i>যোগাযোগ ও কেন্দ্রীয় কার্যালয়</a></li>
-                        <li><a href="{{ route('admin.login') }}" class="text-slate-500 hover:text-amber-400 transition flex items-center"><i class="fa-solid fa-lock mr-1.5 text-slate-700"></i>অ্যাডমিন লগইন</a></li>
                     </ul>
                 </div>
 
