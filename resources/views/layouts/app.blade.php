@@ -238,70 +238,62 @@
             <div class="flex justify-between items-center h-12">
                 
                 <!-- Desktop Navigation Links -->
-                <nav class="hidden md:flex items-center space-x-1 lg:space-x-1.5 text-xs font-bold">
-                    <a href="{{ route('home') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('home') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
+                <nav class="hidden md:flex items-center justify-center w-full space-x-1 lg:space-x-1.5 text-xs font-bold whitespace-nowrap">
+                    <a href="{{ route('home') }}" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('home') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-house text-[11px]"></i>
                         <span>হোম</span>
                     </a>
                     
-                    <a href="{{ route('complaints.create') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('complaints.create') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
+                    <a href="{{ route('complaints.create') }}" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('complaints.create') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-file-signature text-amber-400 text-[11px]"></i>
                         <span>অভিযোগ দাখিল</span>
                     </a>
                     
-                    <a href="{{ route('track') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('track') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
+                    <a href="{{ route('track') }}" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('track') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-location-crosshairs text-emerald-400 text-[11px]"></i>
                         <span>অভিযোগ ট্র্যাকিং</span>
                     </a>
 
-                    <a href="{{ route('member.create') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('member.create') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
+                    <a href="{{ route('member.create') }}" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('member.create') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-user-plus text-blue-400 text-[11px]"></i>
                         <span>সদস্য আবেদন</span>
                     </a>
 
-                    <a href="{{ route('members.directory') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('members.directory') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
+                    <a href="{{ route('members.directory') }}" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('members.directory') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-users text-indigo-300 text-[11px]"></i>
                         <span>সদস্যবৃন্দ</span>
                     </a>
 
-                    <a href="{{ route('member.verify') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 border border-amber-400/40 {{ request()->routeIs('member.verify') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-amber-300 hover:bg-amber-400/10' }}">
+                    <a href="{{ route('member.verify') }}" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 border border-amber-400/40 {{ request()->routeIs('member.verify') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-amber-300 hover:bg-amber-400/10' }}">
                         <i class="fa-solid fa-id-card text-amber-400 text-[11px]"></i>
                         <span>আইডি কার্ড যাচাই</span>
                     </a>
 
-                    <a href="{{ route('about') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('about') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
+                    <a href="{{ route('about') }}" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('about') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-landmark text-[11px]"></i>
                         <span>পরিচিতি ও লক্ষ্য</span>
                     </a>
 
-                    <a href="{{ route('notices') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('notices') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
+                    <a href="{{ route('notices') }}" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('notices') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-bullhorn text-[11px]"></i>
                         <span>নোটিশ</span>
                     </a>
 
-                    <a href="{{ route('gallery') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('gallery') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
+                    <a href="{{ route('gallery') }}" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('gallery') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-camera-retro text-[11px]"></i>
                         <span>গ্যালারি</span>
                     </a>
 
-                    <a href="{{ !empty($siteSettings['news_link']) ? $siteSettings['news_link'] : 'https://bnews24.com/?p=40163' }}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 text-slate-200 hover:text-white hover:bg-white/10">
+                    <a href="{{ !empty($siteSettings['news_link']) ? $siteSettings['news_link'] : 'https://bnews24.com/?p=40163' }}" target="_blank" rel="noopener noreferrer" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 text-slate-200 hover:text-white hover:bg-white/10">
                         <i class="fa-solid fa-newspaper text-amber-400 text-[11px]"></i>
                         <span>সারা দেশের খবর</span>
                     </a>
 
-                    <a href="{{ route('contact') }}" class="px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('contact') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
+                    <a href="{{ route('contact') }}" class="px-2.5 lg:px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 {{ request()->routeIs('contact') ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-200 hover:text-white hover:bg-white/10' }}">
                         <i class="fa-solid fa-headset text-[11px]"></i>
                         <span>যোগাযোগ</span>
                     </a>
                 </nav>
-
-                <!-- Quick Urgent Action Pill on Right -->
-                <div class="hidden md:flex items-center space-x-2">
-                    <a href="{{ route('complaints.create') }}" class="px-3 py-1 rounded-full bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-extrabold text-[11px] shadow-md transition flex items-center space-x-1 animate-pulse">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <span>জরুরি আইনি সহায়তা</span>
-                    </a>
-                </div>
 
                 <!-- Mobile Header Line -->
                 <div class="md:hidden flex items-center justify-between w-full h-12">
