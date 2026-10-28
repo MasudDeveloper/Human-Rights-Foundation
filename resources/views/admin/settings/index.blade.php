@@ -108,6 +108,31 @@
                             </label>
                         @endif
                     </div>
+
+                    <!-- Homepage Right Hero Banner (Chairman Portrait) -->
+                    <div class="p-5 rounded-2xl border-2 border-dashed border-blue-300 bg-blue-50/40 md:col-span-2">
+                        <label class="block font-bold text-slate-800 text-sm mb-1">
+                            <i class="fa-solid fa-id-badge text-blue-600 mr-1.5"></i>হোমপেজ হিরো সেকশন ব্যানার ছবি (চেয়ারম্যান বাণী / প্রোফাইল ব্যানার)
+                        </label>
+                        <p class="text-[11px] text-slate-500 mb-3">হোমপেজের ডানপাশে প্রদর্শিত ব্যানার বা চেয়ারম্যান মহোদয়ের বাণী সম্বলিত ছবি আপলোড করুন।</p>
+                        
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3">
+                            <div class="w-24 h-32 rounded-xl bg-white border border-slate-300 p-1 shadow-sm flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                <img src="{{ asset($siteSettings['hero_banner_image'] ?? 'images/chairman_banner.png') }}" alt="Current Hero Banner" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-grow w-full">
+                                <input type="file" name="hero_banner_image" accept="image/*" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-500">
+                                <span class="text-[10px] text-slate-400 mt-1 block">সমর্থিত ফরম্যাট: PNG, JPG, WebP (প্রস্তাবিত সাইজ: 680x1024 বা সমমানের পোর্ট্রেট সাইজ)</span>
+                            </div>
+                        </div>
+
+                        @if(!str_contains($siteSettings['hero_banner_image'] ?? '', 'images/chairman_banner.png'))
+                            <label class="inline-flex items-center text-[11px] text-rose-600 font-semibold cursor-pointer">
+                                <input type="checkbox" name="delete_hero_banner" value="1" class="rounded border-slate-300 text-rose-600 mr-1.5">
+                                <span>কাস্টম ব্যানার মুছে মূল ব্যানারে ফিরে যান</span>
+                            </label>
+                        @endif
+                    </div>
                 </div>
 
                 <!-- Org Names Inputs -->

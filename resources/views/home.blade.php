@@ -69,20 +69,22 @@
 
             <!-- Right Visual Banner / Card -->
             <div class="lg:col-span-5 flex justify-center">
-                <div class="relative w-full max-w-md bg-gradient-to-tr from-brand-900 to-slate-800 p-2 rounded-2xl shadow-2xl border border-brand-700/50">
-                    <div class="overflow-hidden rounded-xl">
-                        <img src="{{ asset('images/crime_banner.jpg') }}" alt="Crime Investigation Team Banner" class="w-full h-64 sm:h-72 object-cover hover:scale-105 transition duration-500">
+                <div class="relative w-full max-w-sm sm:max-w-md bg-gradient-to-tr from-brand-900 to-slate-800 p-2 sm:p-2.5 rounded-2xl shadow-2xl border border-brand-700/50">
+                    <div class="overflow-hidden rounded-xl bg-slate-900/60 flex items-center justify-center">
+                        <img src="{{ asset($siteSettings['hero_banner_image'] ?? 'images/chairman_banner.png') }}" 
+                             alt="{{ $siteSettings['org_name_bn'] ?? 'আন্তর্জাতিক মানবাধিকার আইন সহায়তাকারী ফাউন্ডেশন' }}" 
+                             class="w-full h-auto object-cover rounded-lg hover:scale-[1.02] transition duration-500 shadow-inner">
                     </div>
-                    <div class="p-4 bg-brand-950/90 rounded-xl mt-2 border border-brand-800 flex items-center justify-between">
+                    <div class="p-3.5 bg-brand-950/90 rounded-xl mt-2 border border-brand-800 flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <img src="{{ $siteLogo }}" class="w-11 h-11 rounded-full bg-white p-0.5 shadow object-contain">
+                            <img src="{{ $siteLogo }}" class="w-10 h-10 rounded-full bg-white p-0.5 shadow object-contain flex-shrink-0">
                             <div>
-                                <h4 class="text-xs font-bold text-white">{{ $siteSettings['org_wing'] ?? 'জরুরি সহায়তা সেল' }}</h4>
+                                <h4 class="text-xs font-bold text-white">{{ $siteSettings['org_wing'] ?? 'Worldwide Organization' }}</h4>
                                 <p class="text-[11px] text-emerald-400 font-medium">২৪ ঘণ্টা মনিটরিং</p>
                             </div>
                         </div>
-                        <a href="tel:{{ $siteSettings['site_phone'] ?? '01644416378' }}" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow flex items-center space-x-1.5 transition">
-                            <i class="fa-solid fa-phone"></i>
+                        <a href="tel:{{ $siteSettings['site_phone'] ?? '01758343597' }}" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow flex items-center space-x-1.5 transition">
+                            <i class="fa-solid fa-phone text-xs"></i>
                             <span>কল করুন</span>
                         </a>
                     </div>

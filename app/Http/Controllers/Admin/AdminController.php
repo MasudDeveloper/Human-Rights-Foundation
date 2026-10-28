@@ -484,6 +484,16 @@ class AdminController extends Controller
             Setting::set('authorized_seal_img', '');
         }
 
+        // 6. Homepage Hero Right Banner Image Upload
+        if ($request->hasFile('hero_banner_image')) {
+            $bannerFile = $request->file('hero_banner_image');
+            $bannerName = 'hero_banner_' . time() . '.' . $bannerFile->getClientOriginalExtension();
+            $bannerFile->move(public_path('uploads/settings'), $bannerName);
+            Setting::set('hero_banner_image', 'uploads/settings/' . $bannerName);
+        } elseif ($request->boolean('delete_hero_banner')) {
+            Setting::set('hero_banner_image', 'images/chairman_banner.png');
+        }
+
         $activeTab = $request->input('tab', 'branding');
         return redirect()->route('admin.settings', ['tab' => $activeTab])
             ->with('success', 'ওয়েবসাইট ব্র্যান্ডিং, লোগো ও আইডি কার্ড সেটিংস সফলভাবে সংরক্ষিত হয়েছে।');

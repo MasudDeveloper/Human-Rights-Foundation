@@ -33,6 +33,7 @@ class Setting extends Model
             'site_facebook' => 'https://facebook.com',
             'site_youtube' => 'https://youtube.com',
             'news_link' => 'https://bnews24.com/?p=40163',
+            'hero_banner_image' => 'images/chairman_banner.png',
             'id_card_prefix' => '',
             'id_card_validity_years' => '2',
             'authorized_signature_name' => 'MOINUR RASHID CHOWDHURY',
