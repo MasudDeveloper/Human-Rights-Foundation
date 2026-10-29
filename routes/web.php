@@ -158,3 +158,42 @@ Route::prefix('admin')->group(function () {
         });
     });
 });
+
+/*
+|--------------------------------------------------------------------------
+| Shared Hosting Helper Routes (Run without Terminal)
+|--------------------------------------------------------------------------
+*/
+Route::get('/run-migrate', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $output = \Illuminate\Support\Facades\Artisan::output();
+        return "<div style='font-family:Segoe UI, sans-serif;padding:30px;background:#f0fdf4;border:1px solid #86efac;border-radius:12px;max-width:650px;margin:50px auto;'>
+            <h2 style='color:#166534;margin-top:0;'>✅ মাইগ্রেশন সফলভাবে সম্পন্ন হয়েছে!</h2>
+            <pre style='background:#ffffff;padding:15px;border-radius:8px;border:1px solid #e5e7eb;color:#1f2937;white-space:pre-wrap;font-family:monospace;'>" . ($output ?: 'Nothing to migrate.') . "</pre>
+        </div>";
+    } catch (\Throwable $e) {
+        return "<div style='font-family:Segoe UI, sans-serif;padding:30px;background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;max-width:650px;margin:50px auto;'>
+            <h2 style='color:#991b1b;margin-top:0;'>❌ মাইগ্রেশন এরর:</h2>
+            <pre style='background:#ffffff;padding:15px;border-radius:8px;border:1px solid #e5e7eb;color:#dc2626;white-space:pre-wrap;font-family:monospace;'>{$e->getMessage()}</pre>
+        </div>";
+    }
+});
+
+Route::get('/clear-cache', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        return "<div style='font-family:Segoe UI, sans-serif;padding:30px;background:#f0fdf4;border:1px solid #86efac;border-radius:12px;max-width:650px;margin:50px auto;'>
+            <h2 style='color:#166534;margin-top:0;'>✅ সকল ক্যাশ সফলভাবে মুছে দেওয়া হয়েছে!</h2>
+            <p style='color:#374151;font-size:14px;'>ভিউ ক্যাশ (View), অ্যাপ ক্যাশ (Cache), কনফিগ ক্যাশ (Config) এবং রাউট ক্যাশ (Route) ক্লিয়ার হয়েছে।</p>
+        </div>";
+    } catch (\Throwable $e) {
+        return "<div style='font-family:Segoe UI, sans-serif;padding:30px;background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;max-width:650px;margin:50px auto;'>
+            <h2 style='color:#991b1b;margin-top:0;'>❌ ক্যাশ ক্লিয়ার এরর:</h2>
+            <pre style='background:#ffffff;padding:15px;border-radius:8px;border:1px solid #e5e7eb;color:#dc2626;white-space:pre-wrap;font-family:monospace;'>{$e->getMessage()}</pre>
+        </div>";
+    }
+});
