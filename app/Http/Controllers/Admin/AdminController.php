@@ -10,6 +10,7 @@ use App\Models\Member;
 use App\Models\Notice;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -268,6 +269,34 @@ class AdminController extends Controller
             }
         }
 
+        // Handle NID Front upload
+        if ($request->hasFile('nid_front_image')) {
+            File::ensureDirectoryExists(public_path('uploads/nid_front'));
+            $fFile = $request->file('nid_front_image');
+            $fName = 'nid_f_' . $member->id . '_' . time() . '.' . $fFile->getClientOriginalExtension();
+            $fFile->move(public_path('uploads/nid_front'), $fName);
+            $member->nid_front_image = 'uploads/nid_front/' . $fName;
+
+            if ($member->user) {
+                $member->user->nid_front_image = 'uploads/nid_front/' . $fName;
+                $member->user->save();
+            }
+        }
+
+        // Handle NID Back upload
+        if ($request->hasFile('nid_back_image')) {
+            File::ensureDirectoryExists(public_path('uploads/nid_back'));
+            $bFile = $request->file('nid_back_image');
+            $bName = 'nid_b_' . $member->id . '_' . time() . '.' . $bFile->getClientOriginalExtension();
+            $bFile->move(public_path('uploads/nid_back'), $bName);
+            $member->nid_back_image = 'uploads/nid_back/' . $bName;
+
+            if ($member->user) {
+                $member->user->nid_back_image = 'uploads/nid_back/' . $bName;
+                $member->user->save();
+            }
+        }
+
         // Sync with linked user account
         if ($member->user) {
             if ($request->filled('english_name') || $request->filled('bangla_name')) {
@@ -383,9 +412,35 @@ class AdminController extends Controller
 
         // Handle photo update if uploaded
         if ($request->hasFile('profile_image')) {
-            $pName = uniqid() . '_' . $request->file('profile_image')->getClientOriginalName();
+            File::ensureDirectoryExists(public_path('uploads/profile'));
+            $pName = 'user_p_' . $user->id . '_' . time() . '.' . $request->file('profile_image')->getClientOriginalExtension();
             $request->file('profile_image')->move(public_path('uploads/profile'), $pName);
             $user->profile_image = 'uploads/profile/' . $pName;
+
+            // Sync with member profile if linked
+            Member::where('user_id', $user->id)->update(['id_card_photo' => 'uploads/profile/' . $pName]);
+        }
+
+        // Handle NID Front upload
+        if ($request->hasFile('nid_front_image')) {
+            File::ensureDirectoryExists(public_path('uploads/nid_front'));
+            $fName = 'user_nf_' . $user->id . '_' . time() . '.' . $request->file('nid_front_image')->getClientOriginalExtension();
+            $request->file('nid_front_image')->move(public_path('uploads/nid_front'), $fName);
+            $user->nid_front_image = 'uploads/nid_front/' . $fName;
+
+            // Sync with member profile if linked
+            Member::where('user_id', $user->id)->update(['nid_front_image' => 'uploads/nid_front/' . $fName]);
+        }
+
+        // Handle NID Back upload
+        if ($request->hasFile('nid_back_image')) {
+            File::ensureDirectoryExists(public_path('uploads/nid_back'));
+            $bName = 'user_nb_' . $user->id . '_' . time() . '.' . $request->file('nid_back_image')->getClientOriginalExtension();
+            $request->file('nid_back_image')->move(public_path('uploads/nid_back'), $bName);
+            $user->nid_back_image = 'uploads/nid_back/' . $bName;
+
+            // Sync with member profile if linked
+            Member::where('user_id', $user->id)->update(['nid_back_image' => 'uploads/nid_back/' . $bName]);
         }
 
         $user->save();
@@ -791,6 +846,135 @@ class AdminController extends Controller
 
         $statusText = $photo->is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়';
         return back()->with('success', "ছবিটি সফলভাবে {$statusText} করা হয়েছে।");
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Video Gallery Management
+    |--------------------------------------------------------------------------
+    */
+    public function videos(Request $request)
+    {
+        $query = Video::query()->orderBy('sort_order', 'asc')->latest();
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('title', 'like', "%{$s}%")
+                  ->orWhere('youtube_url', 'like', "%{$s}%")
+                  ->orWhere('description', 'like', "%{$s}%");
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('status')) {
+            if ($request->status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $videos = $query->paginate(15)->withQueryString();
+        $totalVideos = Video::count();
+        $activeVideos = Video::where('is_active', true)->count();
+        $categories = Video::distinct()->whereNotNull('category')->pluck('category');
+
+        return view('admin.videos.index', compact('videos', 'totalVideos', 'activeVideos', 'categories'));
+    }
+
+    public function createVideo()
+    {
+        return view('admin.videos.create');
+    }
+
+    public function storeVideo(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'youtube_url' => 'required|string',
+            'category' => 'nullable|string|max:100',
+            'sort_order' => 'nullable|integer',
+            'description' => 'nullable|string',
+        ], [
+            'title.required' => 'ভিডিওর একটি শিরোনাম দিন।',
+            'youtube_url.required' => 'ইউটিউব ভিডিওর লিংক (URL) প্রদান করুন।',
+        ]);
+
+        $video = new Video();
+        $video->title = $request->title;
+        $video->youtube_url = $request->youtube_url;
+        $video->category = $request->category ?: 'ভিডিও প্রতিবেদন';
+        $video->sort_order = $request->filled('sort_order') ? (int) $request->sort_order : 0;
+        $video->description = $request->description;
+        $video->is_active = $request->boolean('is_active');
+        $video->created_by = session('admin_username', 'Admin');
+
+        if (!$video->youtube_id) {
+            return back()->withInput()->withErrors(['youtube_url' => 'ইউটিউব লিংকটি সঠিক নয়। অনুগ্রহ করে একটি বৈধ ইউটিউব লিংক দিন (যেমন: https://www.youtube.com/watch?v=... বা https://youtu.be/...)।']);
+        }
+
+        $video->save();
+
+        return redirect()->route('admin.videos')->with('success', 'নতুন ইউটিউব ভিডিও সফলভাবে যুক্ত করা হয়েছে!');
+    }
+
+    public function editVideo($id)
+    {
+        $video = Video::findOrFail($id);
+        return view('admin.videos.edit', compact('video'));
+    }
+
+    public function updateVideo(Request $request, $id)
+    {
+        $video = Video::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'youtube_url' => 'required|string',
+            'category' => 'nullable|string|max:100',
+            'sort_order' => 'nullable|integer',
+            'description' => 'nullable|string',
+        ], [
+            'title.required' => 'ভিডিওর একটি শিরোনাম দিন।',
+            'youtube_url.required' => 'ইউটিউব ভিডিওর লিংক (URL) প্রদান করুন।',
+        ]);
+
+        $video->title = $request->title;
+        $video->youtube_url = $request->youtube_url;
+        $video->category = $request->category ?: 'ভিডিও প্রতিবেদন';
+        $video->sort_order = $request->filled('sort_order') ? (int) $request->sort_order : 0;
+        $video->description = $request->description;
+        $video->is_active = $request->boolean('is_active');
+
+        if (!$video->youtube_id) {
+            return back()->withInput()->withErrors(['youtube_url' => 'ইউটিউব লিংকটি সঠিক নয়। অনুগ্রহ করে একটি বৈধ ইউটিউব লিংক দিন।']);
+        }
+
+        $video->save();
+
+        return redirect()->route('admin.videos')->with('success', 'ভিডিওর তথ্য সফলভাবে আপডেট করা হয়েছে!');
+    }
+
+    public function deleteVideo($id)
+    {
+        $video = Video::findOrFail($id);
+        $video->delete();
+
+        return back()->with('success', 'ভিডিওটি সফলভাবে মুছে ফেলা হয়েছে।');
+    }
+
+    public function toggleVideoStatus($id)
+    {
+        $video = Video::findOrFail($id);
+        $video->is_active = !$video->is_active;
+        $video->save();
+
+        $statusText = $video->is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়';
+        return back()->with('success', "ভিডিওটি সফলভাবে {$statusText} করা হয়েছে।");
     }
 
     private function formatBytes($bytes, $precision = 1)

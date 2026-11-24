@@ -37,9 +37,166 @@
         }
     </script>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800 flex min-h-screen">
+<body class="bg-slate-100 font-sans text-slate-800 flex min-h-screen" x-data="{ mobileSidebarOpen: false }">
 
-    <!-- Sidebar -->
+    <!-- Mobile Sidebar Drawer Backdrop & Slide-over -->
+    <div x-cloak x-show="mobileSidebarOpen" class="fixed inset-0 z-50 md:hidden flex" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div x-show="mobileSidebarOpen" 
+             x-transition:enter="transition-opacity ease-linear duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="mobileSidebarOpen = false" 
+             class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm"></div>
+
+        <!-- Slide-over Drawer -->
+        <div x-show="mobileSidebarOpen" 
+             x-transition:enter="transition ease-in-out duration-300 transform"
+             x-transition:enter-start="-translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in-out duration-300 transform"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="-translate-x-full"
+             class="relative flex-1 flex flex-col max-w-xs w-full bg-slate-900 text-slate-300 z-10 shadow-2xl">
+             
+            <!-- Mobile Drawer Header -->
+            <div class="h-16 flex items-center justify-between px-5 bg-slate-950 border-b border-slate-800">
+                <div class="flex items-center space-x-3 overflow-hidden">
+                    <img src="{{ $siteLogo }}" alt="Logo" class="h-8 w-8 bg-white p-0.5 rounded-full object-contain flex-shrink-0">
+                    <div class="min-w-0">
+                        <h2 class="text-xs font-bold text-white leading-tight truncate">{{ $siteSettings['org_wing'] ?? 'অ্যাডমিন প্যানেল' }}</h2>
+                        <p class="text-[10px] text-amber-400">Admin Control Panel</p>
+                    </div>
+                </div>
+                <button @click="mobileSidebarOpen = false" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Drawer Nav Links -->
+            <nav class="flex-grow p-4 space-y-1.5 text-xs font-medium overflow-y-auto">
+                <a href="{{ route('admin.dashboard') }}" @click="mobileSidebarOpen = false" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.dashboard') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <i class="fa-solid fa-gauge-high text-sm w-5"></i>
+                    <span>ড্যাশবোর্ড</span>
+                </a>
+                
+                <a href="{{ route('admin.complaints') }}" @click="mobileSidebarOpen = false" class="flex items-center justify-between px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.complaints*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-file-shield text-sm w-5"></i>
+                        <span>অভিযোগসমূহ</span>
+                    </div>
+                    @php
+                        $pendingComplaintsCount = \App\Models\Complaint::where('status', 'pending')->count();
+                    @endphp
+                    @if($pendingComplaintsCount > 0)
+                        <span class="bg-rose-500 text-white font-bold text-[10px] px-2 py-0.5 rounded-full">{{ $pendingComplaintsCount }}</span>
+                    @endif
+                </a>
+
+                <a href="{{ route('admin.members') }}" @click="mobileSidebarOpen = false" class="flex items-center justify-between px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.members*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-id-card text-sm w-5"></i>
+                        <span>সদস্য আবেদন</span>
+                    </div>
+                    @php
+                        $pendingMembersCount = \App\Models\Member::where('status', 'pending')->count();
+                    @endphp
+                    @if($pendingMembersCount > 0)
+                        <span class="bg-blue-500 text-white font-bold text-[10px] px-2 py-0.5 rounded-full">{{ $pendingMembersCount }}</span>
+                    @endif
+                </a>
+
+                <a href="{{ route('admin.users') }}" @click="mobileSidebarOpen = false" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.users*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <i class="fa-solid fa-users text-sm w-5"></i>
+                    <span>নিবন্ধিত ব্যবহারকারী</span>
+                </a>
+
+                <a href="{{ route('admin.notices') }}" @click="mobileSidebarOpen = false" class="flex items-center justify-between px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.notices*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-bullhorn text-sm w-5"></i>
+                        <span>নোটিশ ও বিজ্ঞপ্তি</span>
+                    </div>
+                    @php
+                        $activeNoticesCount = \App\Models\Notice::active()->count();
+                    @endphp
+                    @if($activeNoticesCount > 0)
+                        <span class="bg-amber-400 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded-full">{{ $activeNoticesCount }}</span>
+                    @endif
+                </a>
+
+                <a href="{{ route('admin.gallery') }}" @click="mobileSidebarOpen = false" class="flex items-center justify-between px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.gallery*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-camera-retro text-sm w-5"></i>
+                        <span>ফটো গ্যালারি</span>
+                    </div>
+                    @php
+                        $activeGalleryCount = \App\Models\Gallery::active()->count();
+                    @endphp
+                    @if($activeGalleryCount > 0)
+                        <span class="bg-amber-400 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded-full">{{ $activeGalleryCount }}</span>
+                    @endif
+                </a>
+
+                <!-- Video Gallery Menu -->
+                <a href="{{ route('admin.videos') }}" @click="mobileSidebarOpen = false" class="flex items-center justify-between px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.videos*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-circle-play text-sm w-5 text-rose-400"></i>
+                        <span>ভিডিও গ্যালারি</span>
+                    </div>
+                    @php
+                        $activeVideosCount = \App\Models\Video::active()->count();
+                    @endphp
+                    @if($activeVideosCount > 0)
+                        <span class="bg-rose-500 text-white font-bold text-[10px] px-2 py-0.5 rounded-full">{{ $activeVideosCount }}</span>
+                    @endif
+                </a>
+
+                @if(session('admin_role') === 'super_admin')
+                    <div class="pt-2">
+                        <span class="text-[10px] font-bold text-amber-400/80 uppercase tracking-wider px-3">সুপার অ্যাডমিন মেনু</span>
+                    </div>
+                    <a href="{{ route('admin.settings') }}" @click="mobileSidebarOpen = false" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.settings*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                        <i class="fa-solid fa-sliders text-sm w-5 text-amber-400"></i>
+                        <span>লোগো, ওয়েবসাইট ও কার্ড সেটিংস</span>
+                    </a>
+                @endif
+
+                <div class="pt-4 mt-4 border-t border-slate-800">
+                    <a href="{{ route('home') }}" target="_blank" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs w-5"></i>
+                        <span>মূল ওয়েবসাইট দেখুন</span>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Mobile Drawer User Profile Footer -->
+            <div class="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-xs">
+                        {{ strtoupper(substr(session('admin_username', 'A'), 0, 1)) }}
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white">{{ session('admin_username') }}</p>
+                        <span class="text-[10px] {{ session('admin_role') === 'super_admin' ? 'text-amber-400 font-bold' : 'text-emerald-400' }} flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full {{ session('admin_role') === 'super_admin' ? 'bg-amber-400' : 'bg-emerald-400' }} mr-1"></span>
+                            {{ session('admin_role') === 'super_admin' ? 'সুপার অ্যাডমিন' : 'সাধারণ অ্যাডমিন' }}
+                        </span>
+                    </div>
+                </div>
+                <form method="POST" action="{{ route('admin.logout') }}">
+                    @csrf
+                    <button type="submit" title="লগআউট" class="text-slate-400 hover:text-rose-400 p-1.5 transition">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desktop Sidebar -->
     <aside class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 hidden md:flex flex-col border-r border-slate-800">
         <!-- Brand -->
         <div class="h-16 flex items-center px-6 bg-slate-950 border-b border-slate-800 space-x-3">
@@ -114,6 +271,20 @@
                 @endif
             </a>
 
+            <!-- Video Gallery Menu -->
+            <a href="{{ route('admin.videos') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.videos*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-circle-play text-sm w-5 text-rose-400"></i>
+                    <span>ভিডিও গ্যালারি</span>
+                </div>
+                @php
+                    $activeVideosCount = \App\Models\Video::active()->count();
+                @endphp
+                @if($activeVideosCount > 0)
+                    <span class="bg-rose-500 text-white font-bold text-[10px] px-2 py-0.5 rounded-full">{{ $activeVideosCount }}</span>
+                @endif
+            </a>
+
             @if(session('admin_role') === 'super_admin')
                 <div class="pt-2">
                     <span class="text-[10px] font-bold text-amber-400/80 uppercase tracking-wider px-3">সুপার অ্যাডমিন মেনু</span>
@@ -123,7 +294,6 @@
                     <span>লোগো, ওয়েবসাইট ও কার্ড সেটিংস</span>
                 </a>
             @endif
-
 
             <div class="pt-4 mt-4 border-t border-slate-800">
                 <a href="{{ route('home') }}" target="_blank" class="flex items-center space-x-3 px-3 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
@@ -159,12 +329,17 @@
     <!-- Main Content Area -->
     <div class="flex-grow flex flex-col min-w-0">
         <!-- Top header -->
-        <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <header class="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
             <div class="flex items-center space-x-3">
+                <!-- Mobile Hamburger Toggle Button -->
+                <button @click="mobileSidebarOpen = true" type="button" class="md:hidden p-2 -ml-1 text-slate-700 hover:text-slate-950 hover:bg-slate-100 rounded-xl transition focus:outline-none" aria-label="মেনু খুলুন">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+
                 <a href="{{ route('admin.dashboard') }}" class="md:hidden">
-                    <img src="{{ asset('images/cit_logo.png') }}" class="h-8 w-8">
+                    <img src="{{ $siteLogo }}" class="h-8 w-8 object-contain rounded-full bg-white border border-slate-200 p-0.5">
                 </a>
-                <h1 class="text-base font-bold text-slate-800">@yield('page_title', 'ড্যাশবোর্ড')</h1>
+                <h1 class="text-sm sm:text-base font-bold text-slate-800 truncate">@yield('page_title', 'ড্যাশবোর্ড')</h1>
             </div>
             <div class="flex items-center space-x-4">
                 <a href="{{ route('home') }}" target="_blank" class="text-xs text-brand-700 font-semibold hover:underline flex items-center">

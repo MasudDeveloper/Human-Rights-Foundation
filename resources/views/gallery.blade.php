@@ -7,13 +7,27 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Simple Clean Header -->
-        <div class="text-center max-w-xl mx-auto mb-8">
+        <div class="text-center max-w-xl mx-auto mb-6">
             <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                 ফটো গ্যালারি
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-1.5">
                 সংস্থার কেন্দ্রীয় ও মাঠপর্যায়ের বিভিন্ন কার্যক্রম ও কর্মসূচির আলোকচিত্র
             </p>
+        </div>
+
+        <!-- Navigation Tabs: Photo & Video -->
+        <div class="flex justify-center mb-8">
+            <div class="inline-flex p-1.5 bg-slate-200/80 rounded-2xl shadow-inner border border-slate-300/60">
+                <a href="{{ route('gallery') }}" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 bg-white text-slate-900 shadow-sm">
+                    <i class="fa-solid fa-camera-retro text-amber-500"></i>
+                    <span>ফটো গ্যালারি</span>
+                </a>
+                <a href="{{ route('videos') }}" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center space-x-2 text-slate-600 hover:text-slate-900">
+                    <i class="fa-solid fa-circle-play text-rose-500"></i>
+                    <span>ভিডিও গ্যালারি</span>
+                </a>
+            </div>
         </div>
 
         <!-- Category Filters -->

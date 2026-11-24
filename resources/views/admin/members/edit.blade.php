@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'সদস্য তথ্য ও আইডি কার্ড সম্পাদনা - #' . $member->id)
-@section('page_title', 'সদস্য পূর্ণ প্রোফাইল ও আইডি কার্ড সম্পাদনা (সুপার অ্যাডমিন)')
+@section('page_title', 'সদস্য প্রোফাইল, ছবি ও NID সম্পাদনা')
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
@@ -10,10 +10,10 @@
     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <span class="text-xs font-bold text-amber-600 uppercase tracking-wider flex items-center">
-                <i class="fa-solid fa-shield-halved mr-1.5"></i>সুপার অ্যাডমিন নিয়ন্ত্রণ
+                <i class="fa-solid fa-user-pen mr-1.5"></i>অ্যাডমিন নিয়ন্ত্রণ
             </span>
-            <h2 class="text-xl font-bold text-slate-900 mt-1">সদস্য প্রোফাইল ও আইডি কার্ড ডাটা সম্পাদনা</h2>
-            <p class="text-xs text-slate-500 mt-0.5">সদস্যের ব্যক্তিগত তথ্য, পদবী, রক্তের গ্রুপ, ঠিকানা ও কার্ড নম্বর যেকোনো সময় আপডেট করতে পারেন</p>
+            <h2 class="text-xl font-bold text-slate-900 mt-1">সদস্য প্রোফাইল, ছবি ও NID সম্পাদনা</h2>
+            <p class="text-xs text-slate-500 mt-0.5">সদস্যের ছবি, জাতীয় পরিচয়পত্র (NID), ব্যক্তিগত তথ্য ও কার্ড নম্বর যেকোনো সময় আপডেট করতে পারেন</p>
         </div>
         <div class="flex items-center space-x-2">
             @if($member->member_id_card_number)
@@ -87,19 +87,67 @@
                 </div>
             </div>
 
-            <!-- Member Photo Upload with Preview -->
-            <div class="p-3.5 bg-white rounded-xl border border-amber-200 flex flex-col sm:flex-row items-center gap-4">
-                <div class="w-20 h-24 rounded-xl bg-slate-100 border-2 border-amber-300 overflow-hidden flex-shrink-0 flex items-center justify-center shadow-sm">
-                    @if($member->effective_photo)
-                        <img src="{{ $member->effective_photo }}" alt="Photo" class="w-full h-full object-cover">
-                    @else
-                        <i class="fa-solid fa-user text-slate-400 text-2xl"></i>
-                    @endif
-                </div>
-                <div class="flex-grow space-y-1">
-                    <label class="block font-bold text-slate-800">সদস্যের ছবি পরিবর্তন (ID Card Photo)</label>
-                    <input type="file" name="id_card_photo" accept="image/*" class="w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-amber-400 file:text-slate-950">
-                    <span class="text-[10px] text-slate-400 block">উচ্চ রেজোলিউশন বা পাসপোর্ট সাইজের ছবি দিন। কার্ডের গোলাকার ফ্রেমে নিখুঁতভাবে প্রদর্শিত হবে।</span>
+            <!-- Member Photo & NID Documents Upload Cards -->
+            <div class="space-y-2 pt-2">
+                <label class="block font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center">
+                    <i class="fa-solid fa-camera text-purple-600 mr-1.5"></i>
+                    সদস্যের ছবি ও জাতীয় পরিচয়পত্র (NID) ডকুমেন্টস পরিবর্তন
+                </label>
+                <p class="text-[11px] text-slate-500">নতুন ছবি বা NID আপলোড করলে সংশ্লিষ্ট নাগরিক অ্যাকাউন্টে এবং আইডি কার্ডে স্বয়ংক্রিয়ভাবে আপডেট হবে। কোনো ছবি পরিবর্তন করতে না চাইলে খালি রাখুন।</p>
+
+                @php
+                    $nidFront = $member->nid_front_image ?: ($member->user->nid_front_image ?? null);
+                    $nidBack = $member->nid_back_image ?: ($member->user->nid_back_image ?? null);
+                @endphp
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                    <!-- Profile Photo Card -->
+                    <div class="p-4 bg-white rounded-2xl border border-amber-200 flex flex-col items-center text-center shadow-xs">
+                        <div class="w-20 h-24 rounded-xl bg-slate-100 border-2 border-amber-300 overflow-hidden mb-2.5 flex items-center justify-center relative shadow-inner">
+                            <img id="previewMemberPhoto" src="{{ $member->effective_photo ? asset($member->effective_photo) : '' }}" class="{{ $member->effective_photo ? '' : 'hidden' }} w-full h-full object-cover">
+                            <i id="iconMemberPhoto" class="fa-solid fa-user text-slate-400 text-2xl {{ $member->effective_photo ? 'hidden' : '' }}"></i>
+                            @if($member->effective_photo)
+                                <a href="{{ asset($member->effective_photo) }}" target="_blank" title="বড় আকারে দেখুন" class="absolute bottom-1 right-1 bg-slate-900/80 text-white text-[9px] px-1.5 py-0.5 rounded font-mono hover:bg-slate-900">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                </a>
+                            @endif
+                        </div>
+                        <span class="block font-bold text-slate-800 text-xs">পাসপোর্ট সাইজ ছবি</span>
+                        <span class="block text-[10px] text-slate-400 mb-2">ID Card Profile Photo</span>
+                        <input type="file" name="id_card_photo" id="inputMemberPhoto" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-amber-400 file:text-slate-950 file:cursor-pointer cursor-pointer" onchange="previewAdminImg(this, 'previewMemberPhoto', 'iconMemberPhoto')">
+                    </div>
+
+                    <!-- NID Front Card -->
+                    <div class="p-4 bg-white rounded-2xl border border-indigo-200 flex flex-col items-center text-center shadow-xs">
+                        <div class="w-28 h-20 rounded-xl bg-indigo-50 border-2 border-indigo-200 overflow-hidden mb-2.5 flex items-center justify-center relative shadow-inner">
+                            <img id="previewNidFront" src="{{ $nidFront ? asset($nidFront) : '' }}" class="{{ $nidFront ? '' : 'hidden' }} w-full h-full object-cover">
+                            <i id="iconNidFront" class="fa-solid fa-id-card text-indigo-300 text-2xl {{ $nidFront ? 'hidden' : '' }}"></i>
+                            @if($nidFront)
+                                <a href="{{ asset($nidFront) }}" target="_blank" title="বড় আকারে দেখুন" class="absolute bottom-1 right-1 bg-slate-900/80 text-white text-[9px] px-1.5 py-0.5 rounded font-mono hover:bg-slate-900">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                </a>
+                            @endif
+                        </div>
+                        <span class="block font-bold text-slate-800 text-xs">NID সামনের পাতা</span>
+                        <span class="block text-[10px] text-slate-400 mb-2">National ID Front</span>
+                        <input type="file" name="nid_front_image" id="inputNidFront" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-indigo-500 file:text-white file:cursor-pointer cursor-pointer" onchange="previewAdminImg(this, 'previewNidFront', 'iconNidFront')">
+                    </div>
+
+                    <!-- NID Back Card -->
+                    <div class="p-4 bg-white rounded-2xl border border-purple-200 flex flex-col items-center text-center shadow-xs">
+                        <div class="w-28 h-20 rounded-xl bg-purple-50 border-2 border-purple-200 overflow-hidden mb-2.5 flex items-center justify-center relative shadow-inner">
+                            <img id="previewNidBack" src="{{ $nidBack ? asset($nidBack) : '' }}" class="{{ $nidBack ? '' : 'hidden' }} w-full h-full object-cover">
+                            <i id="iconNidBack" class="fa-solid fa-id-card text-purple-300 text-2xl {{ $nidBack ? 'hidden' : '' }}"></i>
+                            @if($nidBack)
+                                <a href="{{ asset($nidBack) }}" target="_blank" title="বড় আকারে দেখুন" class="absolute bottom-1 right-1 bg-slate-900/80 text-white text-[9px] px-1.5 py-0.5 rounded font-mono hover:bg-slate-900">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                </a>
+                            @endif
+                        </div>
+                        <span class="block font-bold text-slate-800 text-xs">NID পিছনের পাতা</span>
+                        <span class="block text-[10px] text-slate-400 mb-2">National ID Back</span>
+                        <input type="file" name="nid_back_image" id="inputNidBack" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-purple-500 file:text-white file:cursor-pointer cursor-pointer" onchange="previewAdminImg(this, 'previewNidBack', 'iconNidBack')">
+                    </div>
                 </div>
             </div>
         </div>
@@ -286,4 +334,25 @@
     </form>
 
 </div>
+
+<script>
+    function previewAdminImg(input, imgId, iconId) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(imgId);
+                const icon = document.getElementById(iconId);
+                if (img) {
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                }
+                if (icon) {
+                    icon.classList.add('hidden');
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
 @endsection

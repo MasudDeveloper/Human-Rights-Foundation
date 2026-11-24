@@ -46,6 +46,7 @@ Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::get('/notices', [HomeController::class, 'notices'])->name('notices');
 Route::get('/notices/{id}', [HomeController::class, 'noticeDetail'])->name('notices.show');
 Route::get('/gallery', [HomeController::class, 'gallery'])->name('gallery');
+Route::get('/videos', [HomeController::class, 'videos'])->name('videos');
 
 // Public printable & ID Card views
 Route::get('/complaint/{id}/print', [ComplaintController::class, 'printView'])->name('complaint.print');
@@ -134,6 +135,23 @@ Route::prefix('admin')->group(function () {
         Route::post('/gallery/{id}/delete', [AdminController::class, 'deleteGallery'])->name('admin.gallery.delete');
         Route::post('/gallery/{id}/toggle-status', [AdminController::class, 'toggleGalleryStatus'])->name('admin.gallery.toggle_status');
 
+        // Video Gallery Management
+        Route::get('/videos', [AdminController::class, 'videos'])->name('admin.videos');
+        Route::get('/videos/create', [AdminController::class, 'createVideo'])->name('admin.videos.create');
+        Route::post('/videos', [AdminController::class, 'storeVideo'])->name('admin.videos.store');
+        Route::get('/videos/{id}/edit', [AdminController::class, 'editVideo'])->name('admin.videos.edit');
+        Route::post('/videos/{id}/update', [AdminController::class, 'updateVideo'])->name('admin.videos.update');
+        Route::post('/videos/{id}/delete', [AdminController::class, 'deleteVideo'])->name('admin.videos.delete');
+        Route::post('/videos/{id}/toggle-status', [AdminController::class, 'toggleVideoStatus'])->name('admin.videos.toggle_status');
+
+        // Member Profile & Photos / NID Edit (Admin & Super Admin)
+        Route::get('/members/{id}/edit', [AdminController::class, 'editMember'])->name('admin.members.edit');
+        Route::post('/members/{id}/update', [AdminController::class, 'updateMember'])->name('admin.members.update');
+
+        // User Account & Photos / NID Edit (Admin & Super Admin)
+        Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
+        Route::post('/users/{id}/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
+
         // Leave Impersonation (Available to admin who impersonated)
         Route::post('/leave-impersonation', [AdminController::class, 'leaveImpersonation'])->name('admin.leave_impersonation');
 
@@ -141,14 +159,6 @@ Route::prefix('admin')->group(function () {
         Route::middleware('super_admin.auth')->group(function () {
             // Impersonate / Login as user
             Route::post('/users/{id}/impersonate', [AdminController::class, 'impersonateUser'])->name('admin.users.impersonate');
-
-            // Super Admin Edit Member profile
-            Route::get('/members/{id}/edit', [AdminController::class, 'editMember'])->name('admin.members.edit');
-            Route::post('/members/{id}/update', [AdminController::class, 'updateMember'])->name('admin.members.update');
-
-            // Edit User info
-            Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
-            Route::post('/users/{id}/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
 
             // Website Branding, Logo, ID Card & System Settings
             Route::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');

@@ -7,6 +7,7 @@ use App\Models\Gallery;
 use App\Models\Member;
 use App\Models\Notice;
 use App\Models\User;
+use App\Models\Video;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -139,5 +140,28 @@ class HomeController extends Controller
         $currentCategory = $request->input('category', 'all');
 
         return view('gallery', compact('photos', 'categories', 'currentCategory'));
+    }
+
+    public function videos(Request $request)
+    {
+        $query = Video::active()->orderBy('sort_order', 'asc')->latest();
+
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('title', 'like', "%{$s}%")
+                  ->orWhere('description', 'like', "%{$s}%");
+            });
+        }
+
+        $videos = $query->paginate(12)->withQueryString();
+        $categories = Video::active()->distinct()->whereNotNull('category')->pluck('category');
+        $currentCategory = $request->input('category', 'all');
+
+        return view('videos', compact('videos', 'categories', 'currentCategory'));
     }
 }
