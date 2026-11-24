@@ -696,10 +696,14 @@ class AdminController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'category' => 'nullable|string|max:100',
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:15360',
+            'image' => 'required|image|max:30720',
             'event_date' => 'nullable|date',
             'sort_order' => 'nullable|integer',
             'description' => 'nullable|string',
+        ], [
+            'image.required' => 'গ্যালারির জন্য একটি ছবি নির্বাচন করুন।',
+            'image.image' => 'নির্বাচিত ফাইলটি অবশ্যই ছবি (JPG, PNG, WEBP) হতে হবে।',
+            'image.max' => 'ছবির সাইজ ৩০ মেগাবাইটের কম হতে হবে।',
         ]);
 
         $photo = new Gallery();
@@ -717,6 +721,8 @@ class AdminController extends Controller
             $filename = 'gallery_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/gallery'), $filename);
             $photo->image_path = 'uploads/gallery/' . $filename;
+        } else {
+            return back()->withInput()->withErrors(['image' => 'ছবির ফাইলটি সার্ভারে গৃহীত হয়নি। দয়া করে ছবিটির সাইজ কিছুটা কমিয়ে আবার চেষ্টা করুন।']);
         }
 
         $photo->save();
@@ -737,7 +743,7 @@ class AdminController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'category' => 'nullable|string|max:100',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:15360',
+            'image' => 'nullable|image|max:30720',
             'event_date' => 'nullable|date',
             'sort_order' => 'nullable|integer',
             'description' => 'nullable|string',

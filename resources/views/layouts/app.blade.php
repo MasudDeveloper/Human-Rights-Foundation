@@ -138,7 +138,7 @@
 
             <!-- Right Quick Actions -->
             <div class="hidden md:flex items-center space-x-4 text-slate-300 flex-shrink-0 text-xs">
-                <a href="tel:{{ $siteSettings['site_phone'] ?? '01644416378' }}" class="hover:text-amber-300 transition flex items-center text-emerald-400 font-bold">
+                <a href="tel:{{ $siteSettings['site_phone'] ?? '01758343597' }}" class="hover:text-amber-300 transition flex items-center text-emerald-400 font-bold">
                     <i class="fa-solid fa-phone mr-1.5"></i>{{ $siteSettings['site_phone'] ?? '01758343597' }}
                 </a>
                 <span class="text-slate-600">|</span>
@@ -175,7 +175,7 @@
             <!-- Right Side: Action Badges & Citizen Auth Profile (Desktop Only) -->
             <div class="hidden md:flex items-center space-x-3">
                 <!-- 24/7 Hotline Badge -->
-                <a href="tel:{{ $siteSettings['site_phone'] ?? '01644416378' }}" class="hidden lg:flex items-center space-x-3 bg-white/5 hover:bg-white/10 px-3.5 py-2 rounded-2xl border border-white/10 transition text-left">
+                <a href="tel:{{ $siteSettings['site_phone'] ?? '01758343597' }}" class="hidden lg:flex items-center space-x-3 bg-white/5 hover:bg-white/10 px-3.5 py-2 rounded-2xl border border-white/10 transition text-left">
                     <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base border border-emerald-500/30">
                         <i class="fa-solid fa-phone-volume"></i>
                     </div>
@@ -448,7 +448,7 @@
 
                     <!-- Drawer Footer Section -->
                     <div class="pt-4 border-t border-white/10 mt-4 space-y-2">
-                        <a href="tel:01644416378" class="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow transition">
+                        <a href="tel:01758343597" class="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow transition">
                             <i class="fa-solid fa-phone-volume"></i>
                             <span>২৪/৭ হটলাইন: 01758343597</span>
                         </a>

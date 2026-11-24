@@ -6,6 +6,7 @@ use App\Models\Member;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class MemberController extends Controller
 {
@@ -33,9 +34,9 @@ class MemberController extends Controller
     {
         $user = Auth::user();
 
-        $photoRule = ($user && $user->profile_image) ? 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120' : 'required|image|mimes:jpeg,png,jpg,webp|max:5120';
-        $nidFrontRule = ($user && $user->nid_front_image) ? 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120' : 'required|image|mimes:jpeg,png,jpg,webp|max:5120';
-        $nidBackRule = ($user && $user->nid_back_image) ? 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120' : 'required|image|mimes:jpeg,png,jpg,webp|max:5120';
+        $photoRule = ($user && $user->profile_image) ? 'nullable|image|max:25600' : 'required|image|max:25600';
+        $nidFrontRule = ($user && $user->nid_front_image) ? 'nullable|image|max:25600' : 'required|image|max:25600';
+        $nidBackRule = ($user && $user->nid_back_image) ? 'nullable|image|max:25600' : 'required|image|max:25600';
 
         $request->validate([
             'post_name' => 'required|string',
@@ -74,7 +75,7 @@ class MemberController extends Controller
         $photoPath = $user->profile_image ?? null;
         if ($request->hasFile('photo')) {
             $photoDir = public_path('uploads/members');
-            if (!file_exists($photoDir)) mkdir($photoDir, 0777, true);
+            File::ensureDirectoryExists($photoDir);
             $photoName = 'photo_' . uniqid() . '.' . $request->file('photo')->getClientOriginalExtension();
             $request->file('photo')->move($photoDir, $photoName);
             $photoPath = 'uploads/members/' . $photoName;
@@ -85,7 +86,7 @@ class MemberController extends Controller
         $nidFrontPath = $user->nid_front_image ?? null;
         if ($request->hasFile('nid_front')) {
             $nidFrontDir = public_path('uploads/nid_front');
-            if (!file_exists($nidFrontDir)) mkdir($nidFrontDir, 0777, true);
+            File::ensureDirectoryExists($nidFrontDir);
             $nidFrontName = 'nid_f_' . uniqid() . '.' . $request->file('nid_front')->getClientOriginalExtension();
             $request->file('nid_front')->move($nidFrontDir, $nidFrontName);
             $nidFrontPath = 'uploads/nid_front/' . $nidFrontName;
@@ -96,7 +97,7 @@ class MemberController extends Controller
         $nidBackPath = $user->nid_back_image ?? null;
         if ($request->hasFile('nid_back')) {
             $nidBackDir = public_path('uploads/nid_back');
-            if (!file_exists($nidBackDir)) mkdir($nidBackDir, 0777, true);
+            File::ensureDirectoryExists($nidBackDir);
             $nidBackName = 'nid_b_' . uniqid() . '.' . $request->file('nid_back')->getClientOriginalExtension();
             $request->file('nid_back')->move($nidBackDir, $nidBackName);
             $nidBackPath = 'uploads/nid_back/' . $nidBackName;

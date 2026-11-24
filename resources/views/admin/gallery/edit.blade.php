@@ -16,7 +16,7 @@
 
     <!-- Edit Form Card -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
-        <form method="POST" action="{{ route('admin.gallery.update', $photo->id) }}" enctype="multipart/form-data" class="space-y-6">
+        <form id="galleryEditForm" method="POST" action="{{ route('admin.gallery.update', $photo->id) }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <!-- Current Image & Replacement Upload Area -->
@@ -29,13 +29,13 @@
                     <!-- Current Image Preview -->
                     <div class="w-full sm:w-48 aspect-[4/3] rounded-xl overflow-hidden border border-slate-300 shadow-sm bg-white flex-shrink-0 relative">
                         <img id="imagePreview" src="{{ $photo->image_url }}" alt="{{ $photo->title }}" class="w-full h-full object-cover">
-                        <span class="absolute bottom-1 right-1 bg-slate-950/80 text-white text-[9px] px-1.5 py-0.5 rounded font-mono">বর্তমান</span>
+                        <span id="previewBadge" class="absolute bottom-1 right-1 bg-slate-950/80 text-white text-[9px] px-1.5 py-0.5 rounded font-mono">বর্তমান</span>
                     </div>
 
                     <!-- File Input for New Image -->
                     <div class="flex-grow w-full text-center sm:text-left">
                         <p class="text-xs font-bold text-slate-800">ছবি পরিবর্তন করতে চান?</p>
-                        <p class="text-[11px] text-slate-400 mt-0.5">নতুন ছবি না দিলে আগের ছবিটিই বহাল থাকবে।</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">নতুন ছবি না দিলে আগের ছবিটিই বহাল থাকবে। সর্বোচ্চ রেজোলিউশনের ক্যামেরার ছবিও স্বয়ংক্রিয়ভাবে অপটিমাইজ হয়ে যাবে।</p>
                         
                         <div class="mt-3">
                             <input type="file" 
@@ -152,9 +152,9 @@
                 <a href="{{ route('admin.gallery') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-bold transition">
                     বাতিল
                 </a>
-                <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-md transition flex items-center space-x-1.5">
-                    <i class="fa-solid fa-check"></i>
-                    <span>পরিবর্তন সংরক্ষণ করুন</span>
+                <button type="submit" id="submitBtn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-md transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-check" id="submitIcon"></i>
+                    <span id="submitText">পরিবর্তন সংরক্ষণ করুন</span>
                 </button>
             </div>
         </form>
@@ -169,19 +169,88 @@
         const input = event.target;
         const preview = document.getElementById('imagePreview');
         const fileNameLabel = document.getElementById('fileNameLabel');
+        const previewBadge = document.getElementById('previewBadge');
 
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            const reader = new FileReader();
+        if (!input.files || !input.files[0]) return;
 
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                fileNameLabel.textContent = 'নির্বাচিত নতুন ছবি: ' + file.name + ' (' + (file.size / (1024 * 1024)).toFixed(2) + ' MB)';
-                fileNameLabel.classList.remove('hidden');
-            }
+        const file = input.files[0];
+        const origSizeMb = (file.size / (1024 * 1024)).toFixed(2);
 
-            reader.readAsDataURL(file);
-        }
+        fileNameLabel.innerHTML = '<span class="text-blue-600 font-semibold inline-flex items-center"><i class="fa-solid fa-spinner fa-spin mr-1"></i>ছবি অপটিমাইজেশন চলছে...</span>';
+        fileNameLabel.classList.remove('hidden');
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const tempImg = new Image();
+            tempImg.onload = function() {
+                const MAX_W = 1920;
+                const MAX_H = 1200;
+
+                if (file.size <= 500 * 1024 && tempImg.width <= MAX_W && tempImg.height <= MAX_H) {
+                    preview.src = e.target.result;
+                    if (previewBadge) previewBadge.textContent = 'নতুন ছবি';
+                    fileNameLabel.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>ছবি রেডি (' + (file.size / 1024).toFixed(0) + ' KB)</span>';
+                    return;
+                }
+
+                let width = tempImg.width;
+                let height = tempImg.height;
+
+                if (width > MAX_W || height > MAX_H) {
+                    const ratio = Math.min(MAX_W / width, MAX_H / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(tempImg, 0, 0, width, height);
+
+                canvas.toBlob(function(blob) {
+                    if (!blob) {
+                        preview.src = e.target.result;
+                        if (previewBadge) previewBadge.textContent = 'নতুন ছবি';
+                        fileNameLabel.innerHTML = '<span class="text-emerald-600 font-bold">ছবি রেডি (' + origSizeMb + ' MB)</span>';
+                        return;
+                    }
+
+                    const safeName = (file.name ? file.name.replace(/\.[^/.]+$/, "") : "gallery") + ".jpg";
+                    const compressedFile = new File([blob], safeName, { type: 'image/jpeg' });
+
+                    try {
+                        const dt = new DataTransfer();
+                        dt.items.add(compressedFile);
+                        input.files = dt.files;
+                    } catch (err) {
+                        console.warn("DataTransfer update error:", err);
+                    }
+
+                    preview.src = URL.createObjectURL(blob);
+                    if (previewBadge) previewBadge.textContent = 'নতুন ছবি';
+
+                    const newKb = (blob.size / 1024).toFixed(0);
+                    fileNameLabel.innerHTML = '<span class="text-emerald-600 font-bold inline-flex items-center"><i class="fa-solid fa-circle-check mr-1"></i>স্বয়ংক্রিয়ভাবে অপটিমাইজড: ' + newKb + ' KB (পূর্বে ছিল: ' + origSizeMb + ' MB)</span>';
+                }, 'image/jpeg', 0.84);
+            };
+            tempImg.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
     }
+
+    document.getElementById('galleryEditForm').addEventListener('submit', function() {
+        const btn = document.getElementById('submitBtn');
+        const icon = document.getElementById('submitIcon');
+        const text = document.getElementById('submitText');
+        if (btn) {
+            btn.disabled = true;
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
+            if (icon) icon.className = 'fa-solid fa-circle-notch fa-spin mr-1.5';
+            if (text) text.textContent = 'সংরক্ষণ হচ্ছে...';
+        }
+    });
 </script>
 @endsection

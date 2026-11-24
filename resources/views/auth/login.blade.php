@@ -19,7 +19,7 @@
                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">মোবাইল নম্বর অথবা ইমেইল</label>
                 <div class="relative">
                     <i class="fa-solid fa-phone absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                    <input type="text" name="login" value="{{ old('login') }}" required placeholder="যেমন: 01644416378"
+                    <input type="text" name="login" value="{{ old('login') }}" required placeholder="যেমন: 01758343597"
                         class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-600 focus:border-brand-600 text-xs sm:text-sm">
                 </div>
             </div>

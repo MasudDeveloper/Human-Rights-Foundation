@@ -216,9 +216,9 @@
                     <p class="font-bold text-amber-900">পেমেন্ট নির্দেশনা:</p>
                     <p>অভিযোগ তদন্ত ও প্রক্রিয়াকরণ ফি <strong>৳২৫০ টাকা</strong> নিচের যেকোনো নম্বরে "Send Money" বা "Payment" করুন:</p>
                     <div class="flex flex-wrap gap-2 pt-1 font-mono">
-                        <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-lg font-bold border border-pink-200">বিকাশ: 01644416378</span>
-                        <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-lg font-bold border border-orange-200">নগদ: 01644416378</span>
-                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg font-bold border border-purple-200">রকেট: 01644416378</span>
+                        <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-lg font-bold border border-pink-200">বিকাশ: 01758343597</span>
+                        <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-lg font-bold border border-orange-200">নগদ: 01758343597</span>
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg font-bold border border-purple-200">রকেট: 01758343597</span>
                     </div>
                 </div>
 
