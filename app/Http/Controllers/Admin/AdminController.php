@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -320,12 +321,60 @@ class AdminController extends Controller
             'phone_number.required' => 'মোবাইল নম্বর প্রদান করুন।',
         ]);
 
+        // 1. Photo upload if provided
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            File::ensureDirectoryExists(public_path('uploads/profile'));
+            $photoFile = $request->file('photo');
+            $photoName = 'idcard_' . time() . '_' . uniqid() . '.' . $photoFile->getClientOriginalExtension();
+            $photoFile->move(public_path('uploads/profile'), $photoName);
+            $photoPath = 'uploads/profile/' . $photoName;
+        }
+
+        // 2. Resolve Member & Linked User
         if ($request->filled('existing_member_id')) {
             $member = Member::findOrFail($request->existing_member_id);
+            if ($photoPath) {
+                $member->id_card_photo = $photoPath;
+                if ($member->user) {
+                    $member->user->profile_image = $photoPath;
+                    $member->user->save();
+                }
+            }
         } else {
             $member = new Member();
             $member->status = 'approved';
             $member->nationality = 'বাংলাদেশী';
+            $member->payment_amount = '0';
+            $member->payment_gateway = 'Admin Direct';
+            $member->payment_number = 'N/A';
+            $member->transaction_id = 'ADM-' . strtoupper(Str::random(8));
+            $member->reject_reason = '';
+            $member->time = now()->format('d-m-Y h:i A');
+
+            // Find or automatically create linked User
+            $cleanPhone = trim($request->phone_number);
+            $user = User::where('number', $cleanPhone)->first();
+            if (!$user) {
+                $userName = $request->english_name ?: ($request->bangla_name ?: 'Member');
+                $user = User::create([
+                    'name' => $userName,
+                    'number' => $cleanPhone,
+                    'email' => $request->email ?: ($cleanPhone . '@foundation.org'),
+                    'password' => Hash::make(Str::random(16)),
+                    'nid_number' => $request->nid,
+                    'date_of_birth' => $request->date_of_birth,
+                    'profile_image' => $photoPath,
+                ]);
+            } elseif ($photoPath && empty($user->profile_image)) {
+                $user->profile_image = $photoPath;
+                $user->save();
+            }
+
+            $member->user_id = $user->id;
+            if ($photoPath) {
+                $member->id_card_photo = $photoPath;
+            }
         }
 
         $member->english_name = $request->english_name;
@@ -348,20 +397,6 @@ class AdminController extends Controller
         $member->id_card_issue_date = $request->id_card_issue_date ?: now()->format('Y-m-d');
         $validityYears = (int) Setting::get('id_card_validity_years', 2);
         $member->id_card_expiry_date = $request->id_card_expiry_date ?: now()->addYears($validityYears)->format('Y-m-d');
-
-        // Photo upload
-        if ($request->hasFile('photo')) {
-            File::ensureDirectoryExists(public_path('uploads/profile'));
-            $photoFile = $request->file('photo');
-            $photoName = 'idcard_' . time() . '_' . uniqid() . '.' . $photoFile->getClientOriginalExtension();
-            $photoFile->move(public_path('uploads/profile'), $photoName);
-            $member->id_card_photo = 'uploads/profile/' . $photoName;
-
-            if ($member->user) {
-                $member->user->profile_image = 'uploads/profile/' . $photoName;
-                $member->user->save();
-            }
-        }
 
         // Card Number
         $prefix = Setting::get('id_card_prefix', '');

@@ -4,6 +4,12 @@
  */
 define('LARAVEL_START', microtime(true));
 
+if (!function_exists('mb_split')) {
+    function mb_split(string $pattern, string $string, int $limit = -1): array|false {
+        return @preg_split('/' . str_replace('/', '\/', $pattern) . '/u', $string, $limit);
+    }
+}
+
 // Autoload & Bootstrap detection for standard Laravel or shared hosting public/public_html
 $autoload = file_exists(__DIR__ . '/../vendor/autoload.php') ? __DIR__ . '/../vendor/autoload.php' : __DIR__ . '/vendor/autoload.php';
 $bootstrap = file_exists(__DIR__ . '/../bootstrap/app.php') ? __DIR__ . '/../bootstrap/app.php' : __DIR__ . '/bootstrap/app.php';

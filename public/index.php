@@ -1,5 +1,11 @@
 <?php
 
+if (!function_exists('mb_split')) {
+    function mb_split(string $pattern, string $string, int $limit = -1): array|false {
+        return @preg_split('/' . str_replace('/', '\/', $pattern) . '/u', $string, $limit);
+    }
+}
+
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 

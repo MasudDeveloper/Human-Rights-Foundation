@@ -183,9 +183,12 @@ Route::get('/run-migrate', function () {
     try {
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         $output = \Illuminate\Support\Facades\Artisan::output();
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        $clearOutput = \Illuminate\Support\Facades\Artisan::output();
         return "<div style='font-family:Segoe UI, sans-serif;padding:30px;background:#f0fdf4;border:1px solid #86efac;border-radius:12px;max-width:650px;margin:50px auto;'>
-            <h2 style='color:#166534;margin-top:0;'>✅ মাইগ্রেশন সফলভাবে সম্পন্ন হয়েছে!</h2>
-            <pre style='background:#ffffff;padding:15px;border-radius:8px;border:1px solid #e5e7eb;color:#1f2937;white-space:pre-wrap;font-family:monospace;'>" . ($output ?: 'Nothing to migrate.') . "</pre>
+            <h2 style='color:#166534;margin-top:0;'>✅ মাইগ্রেশন ও ক্যাশ ক্লিয়ার সফল হয়েছে!</h2>
+            <pre style='background:#ffffff;padding:15px;border-radius:8px;border:1px solid #e5e7eb;color:#1f2937;white-space:pre-wrap;font-family:monospace;'>" . ($output ?: "Nothing to migrate.\n") . "\n" . $clearOutput . "</pre>
+            <p><a href='/' style='color:#059669;font-weight:bold;'>← হোমপেজে ফিরে যান</a></p>
         </div>";
     } catch (\Throwable $e) {
         return "<div style='font-family:Segoe UI, sans-serif;padding:30px;background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;max-width:650px;margin:50px auto;'>
