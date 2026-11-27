@@ -14,25 +14,28 @@
             <p class="text-xs text-blue-700 font-semibold"><i class="fa-solid fa-award mr-1"></i>আবেদনকৃত পদবী: {{ $member->post_name }}</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-            @if(session('admin_role') === 'super_admin')
-                @if($member->user_id)
-                    <form method="POST" action="{{ route('admin.users.impersonate', $member->user_id) }}">
-                        @csrf
-                        <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-bold shadow transition flex items-center space-x-1.5" title="সরাসরি এই মেম্বারের প্রোফাইল অ্যাকাউন্টে লগইন করুন">
-                            <i class="fa-solid fa-user-secret"></i>
-                            <span>মেম্বার অ্যাকাউন্টে প্রবেশ (Login)</span>
-                        </button>
-                    </form>
-                @endif
-                <a href="{{ route('admin.members.edit', $member->id) }}" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-400 text-xs font-bold shadow transition flex items-center space-x-1.5">
-                    <i class="fa-solid fa-user-pen"></i>
-                    <span>সম্পাদনা (Edit)</span>
-                </a>
+            @if(session('admin_role') === 'super_admin' && $member->user_id)
+                <form method="POST" action="{{ route('admin.users.impersonate', $member->user_id) }}">
+                    @csrf
+                    <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-bold shadow transition flex items-center space-x-1.5" title="সরাসরি এই মেম্বারের প্রোফাইল অ্যাকাউন্টে লগইন করুন">
+                        <i class="fa-solid fa-user-secret"></i>
+                        <span>মেম্বার অ্যাকাউন্টে প্রবেশ (Login)</span>
+                    </button>
+                </form>
             @endif
+            <a href="{{ route('admin.members.edit', $member->id) }}" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-400 text-xs font-bold shadow transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-user-pen"></i>
+                <span>সম্পাদনা (Edit)</span>
+            </a>
             @if($member->member_id_card_number)
                 <a href="{{ route('member.id_card', $member->id) }}" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold shadow transition flex items-center space-x-1.5">
                     <i class="fa-solid fa-id-card text-amber-400"></i>
                     <span>আইডি কার্ড</span>
+                </a>
+            @else
+                <a href="{{ route('admin.id_cards.create', ['member_id' => $member->id]) }}" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                    <span>কার্ড তৈরি করুন</span>
                 </a>
             @endif
             @if($member->status === 'approved')

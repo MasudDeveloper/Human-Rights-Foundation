@@ -97,10 +97,17 @@
     <!-- Top Action Bar (Screen Only) -->
     <div class="no-print w-full max-w-4xl mb-6 flex flex-wrap justify-between items-center gap-3 bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-700/70 text-white shadow-2xl">
         <div class="flex items-center space-x-3">
-            <a href="{{ route('members.directory') }}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition flex items-center space-x-1.5 border border-slate-700">
-                <i class="fa-solid fa-arrow-left"></i>
-                <span>সদস্য তালিকা</span>
-            </a>
+            @if(session('admin_logged_in'))
+                <a href="{{ route('admin.id_cards') }}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs transition flex items-center space-x-1.5 border border-slate-700">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>আইডি কার্ড তালিকা</span>
+                </a>
+            @else
+                <a href="{{ route('members.directory') }}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition flex items-center space-x-1.5 border border-slate-700">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>সদস্য তালিকা</span>
+                </a>
+            @endif
             <span class="text-xs text-slate-500">|</span>
             <div class="flex items-center space-x-1.5">
                 <i class="fa-solid fa-id-badge text-sky-400 text-xs"></i>

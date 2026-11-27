@@ -113,6 +113,11 @@ Route::prefix('admin')->group(function () {
         Route::post('/members/{id}/status', [AdminController::class, 'updateMemberStatus'])->name('admin.members.status');
         Route::post('/members/{id}/generate-id', [AdminController::class, 'generateIdCard'])->name('admin.members.generate_id');
 
+        // ID Card Generator & Management
+        Route::get('/id-cards', [AdminController::class, 'idCards'])->name('admin.id_cards');
+        Route::get('/id-cards/create', [AdminController::class, 'createIdCard'])->name('admin.id_cards.create');
+        Route::post('/id-cards/store', [AdminController::class, 'storeIdCard'])->name('admin.id_cards.store');
+
         // Users Viewing
         Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
         Route::get('/users/{id}', [AdminController::class, 'userDetail'])->name('admin.users.show');

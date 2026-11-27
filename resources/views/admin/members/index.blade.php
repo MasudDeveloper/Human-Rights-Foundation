@@ -64,14 +64,16 @@
                                     </span>
                                 </td>
                                 <td class="p-3.5 text-right pr-5 space-x-1.5 whitespace-nowrap">
-                                    @if(session('admin_role') === 'super_admin')
-                                        <a href="{{ route('admin.members.edit', $m->id) }}" class="inline-flex items-center px-2 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-[11px] transition" title="সদস্য প্রোফাইল সম্পাদনা">
-                                            <i class="fa-solid fa-user-pen mr-1"></i>এডিট
-                                        </a>
-                                    @endif
+                                    <a href="{{ route('admin.members.edit', $m->id) }}" class="inline-flex items-center px-2 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-[11px] transition" title="সদস্য প্রোফাইল সম্পাদনা">
+                                        <i class="fa-solid fa-user-pen mr-1"></i>এডিট
+                                    </a>
                                     @if($m->member_id_card_number)
                                         <a href="{{ route('member.id_card', $m->id) }}" target="_blank" class="inline-flex items-center px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-400 font-bold text-[11px] transition" title="ডিজিটাল আইডি কার্ড">
                                             <i class="fa-solid fa-id-card mr-1"></i>কার্ড
+                                        </a>
+                                    @else
+                                        <a href="{{ route('admin.id_cards.create', ['member_id' => $m->id]) }}" class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold text-[11px] transition" title="আইডি কার্ড তৈরি করুন">
+                                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>কার্ড তৈরি
                                         </a>
                                     @endif
                                     <a href="{{ route('admin.members.show', $m->id) }}" class="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] transition" title="যাচাই ও অনুমোদন">

@@ -109,6 +109,20 @@
                     @endif
                 </a>
 
+                <!-- ID Card Management & Generator Menu -->
+                <a href="{{ route('admin.id_cards') }}" @click="mobileSidebarOpen = false" class="flex items-center justify-between px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.id_cards*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-address-card text-sm w-5 text-amber-400"></i>
+                        <span>আইডি কার্ড</span>
+                    </div>
+                    @php
+                        $generatedCardsCount = \App\Models\Member::where('id_card_status', 'generated')->count();
+                    @endphp
+                    @if($generatedCardsCount > 0)
+                        <span class="bg-amber-400 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded-full">{{ $generatedCardsCount }}</span>
+                    @endif
+                </a>
+
                 <a href="{{ route('admin.users') }}" @click="mobileSidebarOpen = false" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.users*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
                     <i class="fa-solid fa-users text-sm w-5"></i>
                     <span>নিবন্ধিত ব্যবহারকারী</span>
@@ -237,6 +251,20 @@
                 @endphp
                 @if($pendingMembersCount > 0)
                     <span class="bg-blue-500 text-white font-bold text-[10px] px-2 py-0.5 rounded-full">{{ $pendingMembersCount }}</span>
+                @endif
+            </a>
+
+            <!-- ID Card Management & Generator Menu -->
+            <a href="{{ route('admin.id_cards') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.id_cards*') ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-slate-800 text-slate-300' }}">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-address-card text-sm w-5 text-amber-400"></i>
+                    <span>আইডি কার্ড</span>
+                </div>
+                @php
+                    $generatedCardsCount = \App\Models\Member::where('id_card_status', 'generated')->count();
+                @endphp
+                @if($generatedCardsCount > 0)
+                    <span class="bg-amber-400 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded-full">{{ $generatedCardsCount }}</span>
                 @endif
             </a>
 

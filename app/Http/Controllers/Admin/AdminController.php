@@ -227,6 +227,161 @@ class AdminController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | ID Card Generator & Management
+    |--------------------------------------------------------------------------
+    */
+    public function idCards(Request $request)
+    {
+        $query = Member::query()->latest('id_card_issue_date')->latest('id');
+
+        if ($request->filled('status')) {
+            if ($request->status === 'generated') {
+                $query->where('id_card_status', 'generated');
+            } elseif ($request->status === 'not_generated') {
+                $query->where('id_card_status', '!=', 'generated');
+            }
+        } else {
+            $query->where('id_card_status', 'generated');
+        }
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('bangla_name', 'like', "%{$s}%")
+                  ->orWhere('english_name', 'like', "%{$s}%")
+                  ->orWhere('member_id_card_number', 'like', "%{$s}%")
+                  ->orWhere('phone_number', 'like', "%{$s}%")
+                  ->orWhere('post_name', 'like', "%{$s}%")
+                  ->orWhere('nid', 'like', "%{$s}%");
+            });
+        }
+
+        if ($request->filled('post_name')) {
+            $query->where('post_name', $request->post_name);
+        }
+
+        $cards = $query->paginate(15)->withQueryString();
+
+        $totalCards = Member::where('id_card_status', 'generated')->count();
+        $totalMembers = Member::count();
+        $pendingCards = Member::where('id_card_status', '!=', 'generated')->count();
+        $designations = Member::distinct()->whereNotNull('post_name')->pluck('post_name');
+
+        return view('admin.id_cards.index', compact('cards', 'totalCards', 'totalMembers', 'pendingCards', 'designations'));
+    }
+
+    public function createIdCard(Request $request)
+    {
+        $members = Member::orderBy('id', 'desc')->get();
+        $selectedMember = null;
+        if ($request->filled('member_id')) {
+            $selectedMember = Member::find($request->member_id);
+        }
+
+        $prefix = Setting::get('id_card_prefix', '');
+        $lastId = Member::max('id') ?? 0;
+        $nextNum = str_pad($lastId + 1, 5, '0', STR_PAD_LEFT);
+        $suggestedCardNumber = $prefix ? ($prefix . $nextNum) : $nextNum;
+
+        $posts = [
+            'Chairman',
+            'Vice Chairman',
+            'Secretary General',
+            'Joint Secretary General',
+            'Treasurer',
+            'Legal Advisor',
+            'Central Executive Member',
+            'District Coordinator',
+            'Upazila Coordinator',
+            'Member',
+            'General Member',
+        ];
+
+        return view('admin.id_cards.create', compact('members', 'selectedMember', 'suggestedCardNumber', 'posts'));
+    }
+
+    public function storeIdCard(Request $request)
+    {
+        $request->validate([
+            'english_name' => 'required|string|max:255',
+            'bangla_name' => 'nullable|string|max:255',
+            'post_name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:20',
+            'member_id_card_number' => 'nullable|string|max:50',
+            'blood_group' => 'nullable|string|max:10',
+            'nid' => 'nullable|string|max:50',
+            'date_of_birth' => 'nullable',
+            'id_card_issue_date' => 'nullable',
+            'id_card_expiry_date' => 'nullable',
+            'photo' => 'nullable|image|max:25600',
+        ], [
+            'english_name.required' => 'ইংরেজি নাম প্রদান করুন।',
+            'post_name.required' => 'আইডি কার্ডের পদবী নির্বাচন বা টাইপ করুন।',
+            'phone_number.required' => 'মোবাইল নম্বর প্রদান করুন।',
+        ]);
+
+        if ($request->filled('existing_member_id')) {
+            $member = Member::findOrFail($request->existing_member_id);
+        } else {
+            $member = new Member();
+            $member->status = 'approved';
+            $member->nationality = 'বাংলাদেশী';
+        }
+
+        $member->english_name = $request->english_name;
+        $member->bangla_name = $request->bangla_name ?: $request->english_name;
+        $member->post_name = $request->post_name;
+        $member->phone_number = $request->phone_number;
+        $member->blood_group = $request->blood_group;
+        $member->nid = $request->nid;
+        $member->date_of_birth = $request->date_of_birth;
+        $member->father_name = $request->father_name;
+        $member->mother_name = $request->mother_name;
+        $member->village = $request->village;
+        $member->post_office = $request->post_office;
+        $member->thana = $request->thana;
+        $member->district = $request->district;
+        $member->status = 'approved';
+        $member->id_card_status = 'generated';
+
+        // Issue and Expiry Dates
+        $member->id_card_issue_date = $request->id_card_issue_date ?: now()->format('Y-m-d');
+        $validityYears = (int) Setting::get('id_card_validity_years', 2);
+        $member->id_card_expiry_date = $request->id_card_expiry_date ?: now()->addYears($validityYears)->format('Y-m-d');
+
+        // Photo upload
+        if ($request->hasFile('photo')) {
+            File::ensureDirectoryExists(public_path('uploads/profile'));
+            $photoFile = $request->file('photo');
+            $photoName = 'idcard_' . time() . '_' . uniqid() . '.' . $photoFile->getClientOriginalExtension();
+            $photoFile->move(public_path('uploads/profile'), $photoName);
+            $member->id_card_photo = 'uploads/profile/' . $photoName;
+
+            if ($member->user) {
+                $member->user->profile_image = 'uploads/profile/' . $photoName;
+                $member->user->save();
+            }
+        }
+
+        // Card Number
+        $prefix = Setting::get('id_card_prefix', '');
+        if ($request->filled('member_id_card_number')) {
+            $member->member_id_card_number = $request->member_id_card_number;
+        }
+
+        $member->save();
+
+        if (empty($member->member_id_card_number)) {
+            $num = str_pad($member->id, 5, '0', STR_PAD_LEFT);
+            $member->member_id_card_number = $prefix ? ($prefix . $num) : $num;
+            $member->save();
+        }
+
+        return redirect()->route('member.id_card', $member->id)->with('success', 'আইডি কার্ড সফলভাবে জেনারেট হয়েছে! কার্ড নম্বর: ' . $member->member_id_card_number);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Super Admin: Member Profile Edit & Update
     |--------------------------------------------------------------------------
     */
